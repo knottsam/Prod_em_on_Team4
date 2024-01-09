@@ -8,6 +8,7 @@ namespace Prod_em_on_Team4
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Player firstPLayer;
 
         public Game1()
         {
@@ -44,6 +45,9 @@ namespace Prod_em_on_Team4
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            _spriteBatch.Begin();
+            
+            _spriteBatch.End();
 
             // TODO: Add your drawing code here
 
