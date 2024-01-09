@@ -8,6 +8,7 @@ namespace Prod_em_on_Team4
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Bullet _playerBullet;
 
         public Game1()
         {
@@ -26,6 +27,8 @@ namespace Prod_em_on_Team4
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _playerBullet.LoadContent(Content, "GameBullet");
+          
 
             // TODO: use this.Content to load your game content here
         }
@@ -45,6 +48,9 @@ namespace Prod_em_on_Team4
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+
+            _playerBullet.Draw(_spriteBatch);
 
             base.Draw(gameTime);
         }
