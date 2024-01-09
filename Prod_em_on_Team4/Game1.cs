@@ -36,6 +36,7 @@ namespace Prod_em_on_Team4
                 Exit();
 
             // TODO: Add your update logic here
+            //hi
 
             base.Update(gameTime);
         }
