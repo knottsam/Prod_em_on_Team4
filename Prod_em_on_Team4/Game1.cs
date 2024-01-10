@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Drawing;
+using System.Numerics;
 
 namespace Prod_em_on_Team4
 {
@@ -15,19 +17,22 @@ namespace Prod_em_on_Team4
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            _graphics.PreferredBackBufferWidth = 1000;
+            _graphics.PreferredBackBufferHeight = 800;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            firstPLayer = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight - 100),
+                new Rectangle(), Color.AliceBlue;
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            firstPlayer.LoadContent(Content);
             // TODO: use this.Content to load your game content here
         }
 
@@ -35,7 +40,7 @@ namespace Prod_em_on_Team4
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            firstPlayer.Update(gameTime, startGame, _graphics.PreferredBackBufferWidth);
             // TODO: Add your update logic here
             //hi
 
@@ -46,7 +51,7 @@ namespace Prod_em_on_Team4
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
-            
+            firstPLayer.Draw(_spriteBatch)
             _spriteBatch.End();
 
             // TODO: Add your drawing code here
