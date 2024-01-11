@@ -20,7 +20,9 @@ namespace Prod_em_on_Team4
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            //this doesnt work
+            _playerBullet = new Bullet();
+            _playerBullet.Color = Color.White; 
             base.Initialize();
         }
 
