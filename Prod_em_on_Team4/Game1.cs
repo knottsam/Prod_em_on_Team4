@@ -10,11 +10,15 @@ namespace Prod_em_on_Team4
         private SpriteBatch _spriteBatch;
         private Bullet _playerBullet;
 
+        public static int screenWidth;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            screenWidth = _graphics.PreferredBackBufferWidth;
         }
 
         protected override void Initialize()
@@ -40,10 +44,19 @@ namespace Prod_em_on_Team4
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            if ()
+
+            MouseState mouseState = Mouse.GetState();
+
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed) 
+            {
+                _playerBullet._startMoving = true;
+                _playerBullet.Position = new Vector2(mouseState.X, mouseState.Y);
+            }
+
             //_playerBullet.SpritePosition;
             // TODO: Add your update logic here
 
+            _playerBullet.Update(gameTime);
             base.Update(gameTime);
         }
 

@@ -51,7 +51,7 @@ namespace Prod_em_on_Team4
             set { _spriteColour = value;}
         }
 
-        public Vector2 SpritePosition
+        public Vector2 Position
         {
             get { return _spritePosition; }
             set { _spritePosition = value;}

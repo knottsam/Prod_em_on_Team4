@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,11 @@ namespace Prod_em_on_Team4
     public class Bullet : Sprite
     {
         private Sprite _OwnerSprite;
+
+        private int _bulletSpeed = 20;
+
+        public bool _startMoving = false;
+
         public Bullet()
         {
         }
@@ -26,6 +32,18 @@ namespace Prod_em_on_Team4
 
         public override void Update(GameTime gameTime)
         {
+            if (_startMoving == true)
+            {
+                _spritePosition.X += _bulletSpeed;
+            }
+
+            if (_spritePosition.X > Game1.screenWidth) 
+            {
+                _startMoving = false;
+            }
+
+            Debug.Write(_startMoving);
+
             base.Update(gameTime);
         }
 
