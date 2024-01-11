@@ -12,7 +12,7 @@ namespace Prod_em_on_Team4
         private SpriteBatch _spriteBatch;
         private Player firstPlayer;
 
-        //private Spy spy;
+
 
         public Game1()
         {

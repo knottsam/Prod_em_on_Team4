@@ -35,7 +35,7 @@ namespace Prod_em_on_Team4
 
         }
 
-        public virtual void Update(GameTime gameTime) 
+        public virtual void Update(GameTime gameTime, bool gameStarted, int ScreenWidth) 
         {
             
         }
