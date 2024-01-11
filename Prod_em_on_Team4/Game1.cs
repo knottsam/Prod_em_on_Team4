@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Drawing;
-using System.Numerics;
+using System;
+using System.Diagnostics;
 
 namespace Prod_em_on_Team4
 {
@@ -10,7 +10,9 @@ namespace Prod_em_on_Team4
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Player firstPLayer;
+        private Player firstPlayer;
+
+        //private Spy spy;
 
         public Game1()
         {
@@ -24,8 +26,7 @@ namespace Prod_em_on_Team4
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            firstPLayer = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight - 100),
-                new Rectangle(), Color.AliceBlue;
+            firstPlayer = new Player(new Rectangle(), new Vector2(_graphics.PreferredBackBufferWidth / 2), Color.AliceBlue);
             base.Initialize();
         }
 
@@ -40,7 +41,8 @@ namespace Prod_em_on_Team4
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            firstPlayer.Update(gameTime, startGame, _graphics.PreferredBackBufferWidth);
+            Debug.Write(Keyboard.GetState().IsKeyDown(Keys.Right)); Debug.Write(Keyboard.GetState().IsKeyDown(Keys.Left));
+            firstPlayer.Update(gameTime);
             // TODO: Add your update logic here
             //hi
 
@@ -51,8 +53,9 @@ namespace Prod_em_on_Team4
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
-            firstPLayer.Draw(_spriteBatch)
+            firstPlayer.Draw(_spriteBatch);
             _spriteBatch.End();
+
 
             // TODO: Add your drawing code here
 

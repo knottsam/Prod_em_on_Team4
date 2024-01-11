@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using System;
 
 
-namespace Prod_em_on_Team4.Content
+namespace Prod_em_on_Team4
 {
     public class Sprite : Game1
     {

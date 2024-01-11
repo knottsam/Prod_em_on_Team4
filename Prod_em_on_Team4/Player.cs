@@ -5,14 +5,15 @@ using Microsoft.Xna.Framework.Content;
 
 
 
-namespace Prod_em_on_Team4.Content
+namespace Prod_em_on_Team4
 {
-    public class Player : Sprite
+    internal class Player : Sprite
     {
+        
         public Player() : base()
         { }
 
-        public Player(Rectangle boundingBox, Vector2 spritePosition,  Color spriteColour)
+        public Player(Rectangle boundingBox, Vector2 spritePosition, Color spriteColour)
             : base(boundingBox, spritePosition, spriteColour)
         {
             _spritePosition = spritePosition;
