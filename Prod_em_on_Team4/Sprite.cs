@@ -44,5 +44,23 @@ namespace Prod_em_on_Team4
             _spriteTexture = myContent.Load<Texture2D>(fileName);
 
         }
+
+        public Color Colour 
+        {
+            get { return _spriteColour; }
+            set { _spriteColour = value;}
+        }
+
+        public Vector2 SpritePosition
+        {
+            get { return _spritePosition; }
+            set { _spritePosition = value;}
+        }
+
+        public Rectangle SpriteBox
+        {
+            get { return _spriteBox; }
+            set { _spriteBox = value;}
+        }
     }
 }

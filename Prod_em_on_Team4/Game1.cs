@@ -22,7 +22,8 @@ namespace Prod_em_on_Team4
             // TODO: Add your initialization logic here
             //this doesnt work
             _playerBullet = new Bullet();
-            _playerBullet.Color = Color.White; 
+            _playerBullet.Colour = Color.White; 
+
             base.Initialize();
         }
 
@@ -39,7 +40,8 @@ namespace Prod_em_on_Team4
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            if ()
+            //_playerBullet.SpritePosition;
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -53,6 +55,8 @@ namespace Prod_em_on_Team4
             _spriteBatch.Begin();
 
             _playerBullet.Draw(_spriteBatch);
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

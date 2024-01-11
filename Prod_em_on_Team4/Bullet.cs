@@ -29,12 +29,10 @@ namespace Prod_em_on_Team4
             base.Update(gameTime);
         }
 
-
         public Sprite Owner
         {
             get { return _OwnerSprite; }
             set { _OwnerSprite = value; }
         }
-
     }
 }
