@@ -28,14 +28,14 @@ namespace Prod_em_on_Team4
             spriteBatch.Draw(_spriteTexture, _spritePosition, _spriteColour);
         }
 
-        public void LoadContent(ContentManager myContent, string fileName)
+        public virtual void LoadContent(ContentManager myContent, string fileName)
         {
             myContent.RootDirectory = "Content";
             _spriteTexture = myContent.Load<Texture2D>(fileName);
 
         }
 
-        public virtual void Update(GameTime gameTime, bool gameStarted, int ScreenWidth) 
+        public virtual void Update(GameTime gameTime, bool gameStarted) 
         {
             
         }

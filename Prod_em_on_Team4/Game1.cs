@@ -12,7 +12,9 @@ namespace Prod_em_on_Team4
         private SpriteBatch _spriteBatch;
         private Player firstPlayer;
 
-
+        public static int screenWidth;
+        public static int screenHeight;
+        public static float gravityAmount = 1;
 
         public Game1()
         {
@@ -21,19 +23,22 @@ namespace Prod_em_on_Team4
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = 1000;
             _graphics.PreferredBackBufferHeight = 800;
+
+            screenWidth = _graphics.PreferredBackBufferWidth;
+            screenHeight = _graphics.PreferredBackBufferHeight;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            firstPlayer = new Player(new Rectangle(), new Vector2(_graphics.PreferredBackBufferWidth / 2), Color.AliceBlue);
+            firstPlayer = new Player(new Rectangle(), new Vector2(_graphics.PreferredBackBufferWidth / 2, 0), Color.AliceBlue);
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            firstPlayer.LoadContent(Content);
+            firstPlayer.LoadContent(Content, "player2.0");
             // TODO: use this.Content to load your game content here
         }
 
@@ -41,8 +46,8 @@ namespace Prod_em_on_Team4
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            Debug.Write(Keyboard.GetState().IsKeyDown(Keys.Right)); Debug.Write(Keyboard.GetState().IsKeyDown(Keys.Left));
-            firstPlayer.Update(gameTime);
+            //Debug.Write(Keyboard.GetState().IsKeyDown(Keys.Right)); Debug.Write(Keyboard.GetState().IsKeyDown(Keys.Left));
+            firstPlayer.Update(gameTime, true);
             // TODO: Add your update logic here
             //hi
 
