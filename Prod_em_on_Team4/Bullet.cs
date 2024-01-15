@@ -14,6 +14,11 @@ namespace Prod_em_on_Team4
 
         private int _bulletSpeed = 20;
 
+        public bool moveUp = true;
+        public bool moveDown = true;
+        public bool moveRight = true;
+        public bool moveLeft = true;
+
         public bool _startMoving = false;
 
         public Bullet()
@@ -32,17 +37,31 @@ namespace Prod_em_on_Team4
 
         public override void Update(GameTime gameTime)
         {
-            if (_startMoving == true)
+            if(_startMoving == true && moveUp == true)
+            {
+                _spritePosition.Y -= _bulletSpeed;
+            }
+            if (_startMoving == true && moveDown == true)
+            {
+                _spritePosition.Y += _bulletSpeed;
+            }
+            if (_startMoving == true && moveRight == true)
             {
                 _spritePosition.X += _bulletSpeed;
             }
+            if (_startMoving == true && moveLeft == true)
+            {
+                _spritePosition.X -= _bulletSpeed;
+            }
+            
+         
 
-            if (_spritePosition.X > Game1.screenWidth) 
+            if (_spritePosition.X > Game1.screenWidth || (_spritePosition.X + _spriteTexture.Width) < 0 || _spritePosition.Y > Game1.screenHeight || (_spritePosition.Y + _spriteTexture.Height) < 0) 
             {
                 _startMoving = false;
             }
 
-            Debug.Write(_startMoving);
+          
 
             base.Update(gameTime);
         }

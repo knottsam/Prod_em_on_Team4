@@ -10,6 +10,7 @@ namespace Prod_em_on_Team4
         private SpriteBatch _spriteBatch;
         private Bullet _playerBullet;
 
+        public static int screenHeight;
         public static int screenWidth;
 
         public Game1()
@@ -19,6 +20,7 @@ namespace Prod_em_on_Team4
             IsMouseVisible = true;
 
             screenWidth = _graphics.PreferredBackBufferWidth;
+            screenHeight =  _graphics.PreferredBackBufferHeight;
         }
 
         protected override void Initialize()
@@ -45,6 +47,64 @@ namespace Prod_em_on_Team4
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if(Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                _playerBullet.moveUp = true;
+                _playerBullet.moveDown = false;
+                _playerBullet.moveLeft = false;
+                _playerBullet.moveRight = false;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                _playerBullet.moveUp = false;
+                _playerBullet.moveDown = true;
+                _playerBullet.moveLeft = false;
+                _playerBullet.moveRight = false;
+            }
+           else  if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                _playerBullet.moveUp = false;
+                _playerBullet.moveDown = false;
+                _playerBullet.moveLeft = false;
+                _playerBullet.moveRight = true;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                _playerBullet.moveUp = false;
+                _playerBullet.moveDown = false;
+                _playerBullet.moveLeft = true;
+                _playerBullet.moveRight = false;
+            }
+            else if (Keyboard.GetState().IsKeyDown (Keys.Q))
+            {
+                _playerBullet.moveUp = true;
+                _playerBullet.moveDown = false;
+                _playerBullet.moveLeft = true;
+                _playerBullet.moveRight = false;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.E))
+            {
+                _playerBullet.moveUp = true;
+                _playerBullet.moveDown = false;
+                _playerBullet.moveLeft = false;
+                _playerBullet.moveRight = true;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.CapsLock))
+            {
+                _playerBullet.moveUp = false;
+                _playerBullet.moveDown = true;
+                _playerBullet.moveLeft = true;
+                _playerBullet.moveRight = false;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.F))
+            {
+                _playerBullet.moveUp = false;
+                _playerBullet.moveDown = true;
+                _playerBullet.moveLeft = false;
+                _playerBullet.moveRight = true;
+            }
+
+
             MouseState mouseState = Mouse.GetState();
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed) 
@@ -62,7 +122,7 @@ namespace Prod_em_on_Team4
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
