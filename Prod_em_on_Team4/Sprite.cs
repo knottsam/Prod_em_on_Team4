@@ -35,9 +35,27 @@ namespace Prod_em_on_Team4
 
         }
 
-        public virtual void Update(GameTime gameTime, bool gameStarted)
+        public virtual void Update(GameTime gameTime)
         {
 
+        }
+
+        public Color Colour
+        {
+            get { return _spriteColour; }
+            set { _spriteColour = value; }
+        }
+
+        public Vector2 Position
+        {
+            get { return _spritePosition; }
+            set { _spritePosition = value; }
+        }
+
+        public Rectangle SpriteBox
+        {
+            get { return _spriteBox; }
+            set { _spriteBox = value; }
         }
     }
 

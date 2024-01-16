@@ -25,7 +25,7 @@ namespace Prod_em_on_Team4
             _spriteColour = spriteColour;
             _spriteBox = boundingBox;
         }
-        public override void Update(GameTime gameTime, bool gameStarted)
+        public override void Update(GameTime gameTime)
         {
             _spritePosition = new Vector2(_spritePosition.X, _spritePosition.Y);
 
