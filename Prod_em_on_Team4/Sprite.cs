@@ -6,7 +6,7 @@ using System;
 
 namespace Prod_em_on_Team4
 {
-    public class Sprite : Game1
+    public class Sprite
     {
         protected Texture2D _spriteTexture;
         protected Vector2 _spritePosition;

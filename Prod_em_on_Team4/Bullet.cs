@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,66 +12,76 @@ namespace Prod_em_on_Team4
 {
     public class Bullet : Sprite
     {
-        private Sprite _OwnerSprite;
+        private int _bulletSpeed = 30;
+        private bool _IHitSomething = false;
+        public bool IHitSomething { get => _IHitSomething; }
 
-        private int _bulletSpeed = 20;
+        private Vector2 _direction;
 
-        public bool moveUp = true;
-        public bool moveDown = true;
-        public bool moveRight = true;
-        public bool moveLeft = true;
-
-        public bool _startMoving = false;
+        private static Texture2D _bulletTexture;
 
         public Bullet()
         {
         }
-        public Bullet(Rectangle spriteBox, Vector2 spritePosition, Color spriteColour) : base(spriteBox, spritePosition, spriteColour)
+        public Bullet(Rectangle spriteBox, Vector2 spritePosition, Color spriteColour, Vector2 direction) : base(spriteBox, spritePosition, spriteColour)
         {
-            _spriteBox = spriteBox;
-            _spriteColour = spriteColour;
-            _spritePosition = spritePosition;
+            _direction = direction;
+            direction.Normalize();
         }
-        public void ResetToOwner(Sprite ownerSprite)
-        {
 
+        public static new void LoadContent(ContentManager myContent, string fileName) 
+        {
+            myContent.RootDirectory = "Content";
+            _bulletTexture = myContent.Load<Texture2D>(fileName);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (_startMoving == true && moveUp == true)
-            {
-                _spritePosition.Y -= _bulletSpeed;
-            }
-            if (_startMoving == true && moveDown == true)
-            {
-                _spritePosition.Y += _bulletSpeed;
-            }
-            if (_startMoving == true && moveRight == true)
-            {
-                _spritePosition.X += _bulletSpeed;
-            }
-            if (_startMoving == true && moveLeft == true)
-            {
-                _spritePosition.X -= _bulletSpeed;
-            }
+            int xMove = (int)(_direction.X * _bulletSpeed);
+            int yMove = (int)(_direction.Y * _bulletSpeed);
 
-
-
-            if (_spritePosition.X > Game1.screenWidth || (_spritePosition.X + _spriteTexture.Width) < 0 || _spritePosition.Y > Game1.screenHeight || (_spritePosition.Y + _spriteTexture.Height) < 0)
+            if (_spritePosition.X + xMove > 0)
             {
-                _startMoving = false;
+                if (_spritePosition.X + xMove < Game1.screenWidth - _bulletTexture.Width)
+                {
+                    _spritePosition.X += xMove;
+                }
+                else 
+                {
+                    _spritePosition.X = Game1.screenWidth - _bulletTexture.Width;
+                    _IHitSomething = true;
+                }
+            }
+            else 
+            {
+                _spritePosition.X = 0;
+                _IHitSomething = true;
             }
 
-
+            if(_spritePosition.Y + yMove > 0)
+            {
+                if (_spritePosition.Y + yMove < Game1.screenHeight - _bulletTexture.Height)
+                {
+                    _spritePosition.Y += yMove;
+                }
+                else
+                {
+                    _spritePosition.Y = Game1.screenHeight - _bulletTexture.Height;
+                    _IHitSomething = true;
+                }
+            }
+            else
+            {
+                _spritePosition.Y = 0;
+                _IHitSomething = true;
+            }
 
             base.Update(gameTime);
         }
 
-        public Sprite Owner
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            get { return _OwnerSprite; }
-            set { _OwnerSprite = value; }
+            spriteBatch.Draw(_bulletTexture, _spritePosition, _spriteColour);
         }
     }
 }

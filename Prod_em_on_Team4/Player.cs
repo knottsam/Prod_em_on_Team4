@@ -3,17 +3,23 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System.Diagnostics;
+using System;
+using System.Collections.Generic;
 
 namespace Prod_em_on_Team4
 {
     internal class Player : Sprite
     {
-        private bool moveLeft;
-        private bool moveRight;
-        private bool moveUp;
-
         private float playerYVelocity = 0;
         private float jumpAmount = 20;
+
+        private int moveSpeed = 10;
+
+        private double canShoot = 0;
+
+        private List<Bullet> bullets = new List<Bullet>();
+
+        private Vector2 shootDirection = new Vector2(1,0);
 
         public Player() : base()
         { }
@@ -25,41 +31,44 @@ namespace Prod_em_on_Team4
             _spriteColour = spriteColour;
             _spriteBox = boundingBox;
         }
-        public override void Update(GameTime gameTime)
+
+        private void MovePlayer()
         {
-            _spritePosition = new Vector2(_spritePosition.X, _spritePosition.Y);
+            int horizontalMovement =
+                (Convert.ToInt32(Keyboard.GetState().IsKeyDown(Keys.Right))
+                - Convert.ToInt32(Keyboard.GetState().IsKeyDown(Keys.Left)))
+                * moveSpeed;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            if (horizontalMovement == 0) 
             {
-                moveLeft = true;
+            
             }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            else if (horizontalMovement < 0)
             {
-                moveRight = true;
-            }
+                if (_spritePosition.X + horizontalMovement > 0)
+                {
+                    _spritePosition.X += horizontalMovement;
+                }
+                else
+                {
+                    _spritePosition.X = 0;
+                }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                shootDirection.X = -1;
+            }
+            else
             {
-                moveUp = true;
+                if (_spritePosition.X + horizontalMovement < Game1.screenWidth - _spriteTexture.Width)
+                {
+                    _spritePosition.X += horizontalMovement;
+                }
+                else
+                {
+                    _spritePosition.X = Game1.screenWidth - _spriteTexture.Width;
+                }
+
+                shootDirection.X = 1;
             }
-
-            if (moveLeft == true && _spritePosition.X > 0)
-            {
-                _spritePosition.X -= 10;
-                moveLeft = false;
-            }
-
-            if (moveRight == true && _spritePosition.X < Game1.screenWidth - _spriteTexture.Width)
-            {
-                _spritePosition.X += 10;
-                moveRight = false;
-            }
-            //do stuff using the keyboard
-
-
-
-
 
             if (_spritePosition.Y + playerYVelocity < Game1.screenHeight - _spriteTexture.Height)
             {
@@ -71,23 +80,62 @@ namespace Prod_em_on_Team4
             {
                 _spritePosition.Y = Game1.screenHeight - _spriteTexture.Height;
                 playerYVelocity = 0;
-                if (moveUp == true)
+                if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
                     playerYVelocity -= jumpAmount;
-                    moveUp = false;
                 }
             }
             //jumping code
+        }
 
+        private void ShootBullet(GameTime gameTime) 
+        {
+            if (canShoot >= 0.5)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                {
+                    bullets.Add(
+                    new Bullet
+                     (
+                        new Rectangle(), 
+                        new Vector2(_spritePosition.X + _spriteTexture.Width, _spritePosition.Y + (int)(0.5 * _spriteTexture.Height)), 
+                        Color.White, 
+                        shootDirection
+                    )
+                    );
+                    canShoot = 0;
+                }
+            }
+            else 
+            {
+                canShoot += (1 / gameTime.ElapsedGameTime.TotalMilliseconds);
+            }
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            MovePlayer();
+            ShootBullet(gameTime);
+
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                bullets[i].Update(gameTime);
+            }
 
         }
 
-        /*public void LoadContent(ContentManager myContent)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            myContent.RootDirectory = "Content";
-            _spriteTexture = myContent.Load<Texture2D>("player2.0");
+            for (int i = 0; i < bullets.Count; i++) 
+            {
+                bullets[i].Draw(spriteBatch);
+                if (bullets[i].IHitSomething) 
+                {
+                    bullets.RemoveAt(i);
+                }
+            }
 
-        }*/
-
+            base.Draw(spriteBatch);
+        }
     }
 }
