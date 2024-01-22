@@ -12,6 +12,10 @@ namespace Prod_em_on_Team4
     {
         private float playerYVelocity = 0;
         private float jumpAmount = 20;
+        private float jumpCount = 0;
+        private int maxJumps = 2;
+        private int jumpsAvailable = 0;
+
 
         private int moveSpeed = 10;
 
@@ -20,6 +24,8 @@ namespace Prod_em_on_Team4
         private List<Bullet> bullets = new List<Bullet>();
 
         private Vector2 shootDirection = new Vector2(1,0);
+
+
 
         public Player() : base()
         { }
@@ -80,11 +86,18 @@ namespace Prod_em_on_Team4
             {
                 _spritePosition.Y = Game1.screenHeight - _spriteTexture.Height;
                 playerYVelocity = 0;
-                if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                {
-                    playerYVelocity -= jumpAmount;
-                }
+                jumpsAvailable = maxJumps;
+                
             }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) && jumpsAvailable > 0)
+            {
+                playerYVelocity -= jumpAmount;
+                jumpCount += 1;
+                jumpsAvailable -= 1;
+         
+            }
+
             //jumping code
         }
 
