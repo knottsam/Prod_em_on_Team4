@@ -41,7 +41,7 @@ namespace Prod_em_on_Team4
 
             if (horizontalMovement == 0) 
             {
-            
+
             }
             else if (horizontalMovement < 0)
             {

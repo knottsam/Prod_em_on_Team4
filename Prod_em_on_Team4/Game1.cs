@@ -41,6 +41,8 @@ namespace Prod_em_on_Team4
             firstPlayer.LoadContent(Content, "player2.0");
             Bullet.LoadContent(Content, "GameBullet");
             // TODO: use this.Content to load your game content here
+
+            TileMap.GetTileMap(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -54,10 +56,14 @@ namespace Prod_em_on_Team4
         }
 
         protected override void Draw(GameTime gameTime)
-        {
+        { 
+
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
+
+            TileMap.DrawTiles(_spriteBatch);
             firstPlayer.Draw(_spriteBatch);
+
             _spriteBatch.End();
 
 
