@@ -107,6 +107,12 @@ namespace Prod_em_on_Team4
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
+                    MouseState mouseState = Mouse.GetState();
+                    int mouseX = mouseState.X;
+                    int mouseY = mouseState.Y;
+
+                    shootDirection = new Vector2(mouseX - _spritePosition.X - _spriteTexture.Width, mouseY - _spritePosition.Y);
+                    shootDirection.Normalize();
                     bullets.Add(
                     new Bullet
                      (
