@@ -15,6 +15,7 @@ namespace Prod_em_on_Team4
         private float jumpCount = 0;
         private int maxJumps = 2;
         private int jumpsAvailable = 0;
+        private bool keyDown;
 
 
         private int moveSpeed = 10;
@@ -90,14 +91,18 @@ namespace Prod_em_on_Team4
                 
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) && jumpsAvailable > 0)
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) && jumpsAvailable > 0 && keyDown != true)
             {
-                playerYVelocity -= jumpAmount;
+                playerYVelocity = -jumpAmount;
                 jumpCount += 1;
                 jumpsAvailable -= 1;
-         
+                keyDown = true;
             }
 
+            if(keyDown) 
+            {
+                keyDown = !Keyboard.GetState().IsKeyUp(Keys.Up);
+            }
             //jumping code
         }
 
