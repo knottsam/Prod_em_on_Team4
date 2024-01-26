@@ -81,6 +81,10 @@ namespace Prod_em_on_Team4
             {
                 _spritePosition.Y += playerYVelocity;
                 playerYVelocity += Game1.gravityAmount;
+                if (playerYVelocity > 0 && _spritePosition.X == 0 ||  playerYVelocity > 0 &&_spritePosition.X == Game1.screenWidth - _spriteTexture.Width)
+                {
+                    playerYVelocity -= 0.8f;
+                }
             }
             //adds gravity to the player
             else
@@ -95,7 +99,9 @@ namespace Prod_em_on_Team4
             {
                 playerYVelocity = -jumpAmount;
                 jumpCount += 1;
-                jumpsAvailable -= 1;
+                if(_spritePosition.X == 0 || _spritePosition.X == Game1.screenWidth - _spriteTexture.Width )
+                { jumpsAvailable = 1; }
+                else { jumpsAvailable -= 1; }
                 keyDown = true;
             }
 
