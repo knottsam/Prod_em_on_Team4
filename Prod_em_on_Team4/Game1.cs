@@ -10,19 +10,24 @@ namespace Prod_em_on_Team4
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Player firstPlayer;
+        private Player Spy;
 
-        public static int screenWidth;
-        public static int screenHeight;
+        public static int screenWidth, screenHeight;
         public static float gravityAmount = 1;
+        public static float airResistance = 1;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+<<<<<<< Updated upstream
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 832;
+=======
+            _graphics.PreferredBackBufferWidth = 1400;
+            _graphics.PreferredBackBufferHeight = 800;
+>>>>>>> Stashed changes
 
             screenWidth = _graphics.PreferredBackBufferWidth;
             screenHeight = _graphics.PreferredBackBufferHeight;
@@ -31,14 +36,14 @@ namespace Prod_em_on_Team4
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            firstPlayer = new Player(new Rectangle(), new Vector2(_graphics.PreferredBackBufferWidth / 2, 0), Color.AliceBlue);
+            Spy = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 0), Color.AliceBlue);
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            firstPlayer.LoadContent(Content, "player2.0");
+            Spy.LoadContent(Content, "player2.0");
             Bullet.LoadContent(Content, "GameBullet");
             // TODO: use this.Content to load your game content here
 
@@ -50,19 +55,21 @@ namespace Prod_em_on_Team4
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             // TODO: Add your update logic here
-            firstPlayer.Update(gameTime);
+
+            Spy.Update(gameTime);
+
+            Camera.Follow(Spy);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         { 
-
-            GraphicsDevice.Clear(Color.Black);
-            _spriteBatch.Begin();
+            GraphicsDevice.Clear(Color.Beige);
+            _spriteBatch.Begin(transformMatrix:Camera.Transform);
 
             TileMap.DrawTiles(_spriteBatch);
-            firstPlayer.Draw(_spriteBatch);
+            Spy.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

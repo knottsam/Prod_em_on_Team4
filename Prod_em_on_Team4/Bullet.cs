@@ -2,26 +2,37 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Xml.Linq;
 
 namespace Prod_em_on_Team4
 {
     public class Bullet : Sprite
     {
-        private int _bulletSpeed = 30;
-        private bool _IHitSomething = false;
+        int _bulletSpeed = 30;
+        bool _IHitSomething = false;
+        Vector2 dist = new Vector2(0,0);
         public bool IHitSomething { get => _IHitSomething; }
 
-        private Vector2 _direction;
+        Vector2 _direction;
 
-        private static Texture2D _bulletTexture;
+        static Texture2D _bulletTexture;
 
-        public Bullet()
-        {
-        }
-        public Bullet(Rectangle spriteBox, Vector2 spritePosition, Color spriteColour, Vector2 direction) : base(spriteBox, spritePosition, spriteColour)
+        public Bullet() { }
+        public Bullet(Vector2 spritePosition, Color spriteColour, Vector2 direction) : base(spritePosition, spriteColour)
         {
             _direction = direction;
             direction.Normalize();
+            _spritePosition.Y -= 0.5f*_bulletTexture.Height;
+            _spriteBox = new RectangleF(_spritePosition.X, _spritePosition.Y, _bulletTexture.Width, _bulletTexture.Height);
+
+            foreach (Tile t in TileMap.GetTilesAround(_spritePosition))
+            {
+                if (_spriteBox.Intersects(t.SpriteBox))
+                {
+                    _IHitSomething = true;
+                    break;
+                }
+            }
         }
 
         public static new void LoadContent(ContentManager myContent, string fileName) 
@@ -32,44 +43,39 @@ namespace Prod_em_on_Team4
 
         public override void Update(GameTime gameTime)
         {
-            int xMove = (int)(_direction.X * _bulletSpeed);
-            int yMove = (int)(_direction.Y * _bulletSpeed);
+            float xMove = (_direction.X * _bulletSpeed);
+            float yMove = (_direction.Y * _bulletSpeed);
 
-            if (_spritePosition.X + xMove > 0)
+            _spriteBox.X += xMove;
+            dist.X += xMove;
+            foreach (Tile t in TileMap.GetTilesAround(_spritePosition))
             {
-                if (_spritePosition.X + xMove < Game1.screenWidth - _bulletTexture.Width)
+                if (_spriteBox.Intersects(t.SpriteBox))
                 {
-                    _spritePosition.X += xMove;
-                }
-                else 
-                {
-                    _spritePosition.X = Game1.screenWidth - _bulletTexture.Width;
+                    _spriteBox.X = (xMove > 0) ? t.SpriteBox.Left - _spriteBox.Width : _spriteBox.X = t.SpriteBox.Right;
                     _IHitSomething = true;
+                    break;
                 }
             }
-            else 
+
+            _spriteBox.Y += yMove;
+            dist.Y += yMove;
+            foreach (Tile t in TileMap.GetTilesAround(_spritePosition))
             {
-                _spritePosition.X = 0;
+                if (_spriteBox.Intersects(t.SpriteBox))
+                {
+                    _spriteBox.X = (yMove > 0) ? t.SpriteBox.Top - _spriteBox.Height : t.SpriteBox.Bottom;
+                    _IHitSomething = true;
+                    break;
+                }
+            }
+
+            if (dist.Length() > 1000) 
+            {
                 _IHitSomething = true;
             }
 
-            if(_spritePosition.Y + yMove > 0)
-            {
-                if (_spritePosition.Y + yMove < Game1.screenHeight - _bulletTexture.Height)
-                {
-                    _spritePosition.Y += yMove;
-                }
-                else
-                {
-                    _spritePosition.Y = Game1.screenHeight - _bulletTexture.Height;
-                    _IHitSomething = true;
-                }
-            }
-            else
-            {
-                _spritePosition.Y = 0;
-                _IHitSomething = true;
-            }
+            _spritePosition = _spriteBox.Location;
 
             base.Update(gameTime);
         }
