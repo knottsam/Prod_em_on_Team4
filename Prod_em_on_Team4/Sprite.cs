@@ -10,15 +10,16 @@ namespace Prod_em_on_Team4
     {
         protected Texture2D _spriteTexture;
         protected Vector2 _spritePosition;
-        protected Rectangle _spriteBox;
+        protected RectangleF _spriteBox;
         protected Color _spriteColour;
+
+        public Vector2 Center { get => new Vector2(_spritePosition.X + (_spriteBox.Width / 2), _spritePosition.Y + (_spriteBox.Height / 2)); }
 
         public Sprite()
         { }
 
-        public Sprite(Rectangle spriteBox, Vector2 spritePosition, Color spriteColour)
+        public Sprite(Vector2 spritePosition, Color spriteColour)
         {
-            _spriteBox = spriteBox;
             _spriteColour = spriteColour;
             _spritePosition = spritePosition;
         }
@@ -32,7 +33,7 @@ namespace Prod_em_on_Team4
         {
             myContent.RootDirectory = "Content";
             _spriteTexture = myContent.Load<Texture2D>(fileName);
-
+            _spriteBox = new RectangleF(_spritePosition, _spriteTexture.Width, _spriteTexture.Height);
         }
 
         public virtual void Update(GameTime gameTime)
@@ -52,7 +53,7 @@ namespace Prod_em_on_Team4
             set { _spritePosition = value; }
         }
 
-        public Rectangle SpriteBox
+        public RectangleF SpriteBox
         {
             get { return _spriteBox; }
             set { _spriteBox = value; }
