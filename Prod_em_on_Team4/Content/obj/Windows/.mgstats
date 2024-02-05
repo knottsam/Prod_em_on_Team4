@@ -1,0 +1,5 @@
+Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/GameBullet.png","C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/bin/Windows/GameBullet.xnb","TextureProcessor","Texture2DContent",125,485,0.1068393
+"C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/player2.0.png","C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/bin/Windows/player2.0.xnb","TextureProcessor","Texture2DContent",141,8277,0.0023376
+"C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/Tile.png","C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/bin/Windows/Tile.xnb","TextureProcessor","Texture2DContent",290,16469,0.0024638
+"H:/My Drive/Team 4 Folder ART/UnVincedTiles.png","C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/bin/Windows/UnVincedTiles.xnb","TextureProcessor","Texture2DContent",669,196693,0.0119876

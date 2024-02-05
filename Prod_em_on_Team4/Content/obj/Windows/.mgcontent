@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>Windows</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/GameBullet.png</File>
+    <File>H:/My Drive/Team 4 Folder ART/UnVincedTiles.png</File>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/player2.0.png</File>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/Tile.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File>UnVincedTiles.png</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>
