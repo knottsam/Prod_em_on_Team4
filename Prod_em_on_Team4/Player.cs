@@ -29,8 +29,6 @@ namespace Prod_em_on_Team4
         const float jumpAmount = 20f, wallFriction = 0.9f, terminalVelocity = 64;
         const int maxJumps = 2;
 
-        public static Point visiblePosition;
-
         public Player(Vector2 spritePosition, Color spriteColour) : base(spritePosition, spriteColour) {}
         
         void MovePlayer(GameTime gameTime)
@@ -150,8 +148,6 @@ namespace Prod_em_on_Team4
             // All collision checks are made using the player's bounding box, not the actual player position.
             _spritePosition.X = _spriteBox.X;
             _spritePosition.Y = _spriteBox.Y;
-
-            visiblePosition = _spritePosition.ToPoint();
         }
 
         void ShootBullet(GameTime gameTime) 
