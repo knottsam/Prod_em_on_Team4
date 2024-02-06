@@ -9,17 +9,20 @@ namespace Prod_em_on_Team4
     public static class Camera
     {
         public static Matrix Transform { get; private set; }
-        static Vector3 Position = new();
+        public static Vector3 Position = new();
 
-        private static float moveAmount = 0.1f;
+        private static float moveAmount = 0.2f;
+        private static int maxYOffset = 300;
+
+        private static float Lerp(float start,  float end, float amt) 
+        {
+            return start + (end - start) * amt;
+        }
 
         public static void Follow(Sprite target)
         {
-            float posXDelta = ((-target.Center.X) - Position.X) * moveAmount;
-            float posYDelta = ((-target.Center.Y) - Position.Y) * moveAmount;
-
-            Position.X = (Math.Abs(posXDelta) < 0.1) ? -target.Center.X : Position.X + posXDelta;
-            Position.Y = (Math.Abs(posYDelta) < 0.1) ? -target.Center.Y : Position.Y + posYDelta;
+            Position.X = Lerp(Position.X, (-target.Center.X), moveAmount);
+            Position.Y = Lerp(Position.Y, (-target.Center.Y), moveAmount);
 
             Matrix position = Matrix.CreateTranslation(Position);
 
@@ -29,6 +32,11 @@ namespace Prod_em_on_Team4
                 0);
 
             Transform = position * offset;
+
+            if ((Math.Abs((-target.Center.Y) - Position.Y) > maxYOffset))
+            {
+                Position.Y -= (Math.Abs((-target.Center.Y) - Position.Y) - maxYOffset);
+            }
         }
 
     }

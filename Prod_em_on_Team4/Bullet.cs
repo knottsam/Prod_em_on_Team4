@@ -25,7 +25,7 @@ namespace Prod_em_on_Team4
             _spritePosition.Y -= 0.5f * _bulletTexture.Height;
             _spriteBox = new RectangleF(_spritePosition.X, _spritePosition.Y, _bulletTexture.Width, _bulletTexture.Height);
 
-            foreach (Tile t in TileMap.GetTilesAround(_spritePosition))
+            foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint()))
             {
                 if (_spriteBox.Intersects(t.SpriteBox))
                 {
@@ -48,7 +48,7 @@ namespace Prod_em_on_Team4
 
             _spriteBox.X += xMove;
             dist.X += xMove;
-            foreach (Tile t in TileMap.GetTilesAround(_spritePosition))
+            foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint()))
             {
                 if (_spriteBox.Intersects(t.SpriteBox))
                 {
@@ -60,7 +60,7 @@ namespace Prod_em_on_Team4
 
             _spriteBox.Y += yMove;
             dist.Y += yMove;
-            foreach (Tile t in TileMap.GetTilesAround(_spritePosition))
+            foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint()))
             {
                 if (_spriteBox.Intersects(t.SpriteBox))
                 {

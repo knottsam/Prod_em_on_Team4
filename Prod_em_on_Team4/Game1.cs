@@ -31,18 +31,19 @@ namespace Prod_em_on_Team4
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Spy = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 0), Color.AliceBlue);
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            Spy.LoadContent(Content, "player2.0");
+            
             Bullet.LoadContent(Content, "GameBullet");
             // TODO: use this.Content to load your game content here
 
             TileMap.GetTileMap(Content);
+            Spy = new Player(TileMap.playerSpawnPoint, Color.AliceBlue);
+            Spy.LoadContent(Content, "player2.0");
         }
 
         protected override void Update(GameTime gameTime)
@@ -61,15 +62,12 @@ namespace Prod_em_on_Team4
         protected override void Draw(GameTime gameTime)
         { 
             GraphicsDevice.Clear(Color.Beige);
-            _spriteBatch.Begin(transformMatrix:Camera.Transform);
+            _spriteBatch.Begin(transformMatrix:Camera.Transform, samplerState: SamplerState.PointClamp);
 
-            TileMap.DrawTiles(_spriteBatch);
             Spy.Draw(_spriteBatch);
+            TileMap.DrawTiles(_spriteBatch);
 
             _spriteBatch.End();
-
-
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }

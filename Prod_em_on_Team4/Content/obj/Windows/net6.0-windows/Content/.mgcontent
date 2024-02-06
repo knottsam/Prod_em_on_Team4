@@ -5,13 +5,13 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/GameBullet.png</File>
-    <File>H:/My Drive/Team 4 Folder ART/UnVincedTiles.png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/player2.0.png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/Tile.png</File>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/UnVincedTilesV2.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
-    <File>UnVincedTiles.png</File>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>
