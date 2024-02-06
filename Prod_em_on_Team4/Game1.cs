@@ -15,7 +15,9 @@ namespace Prod_em_on_Team4
         public static int screenWidth, screenHeight;
         public static float gravityAmount = 1;
         public static float airResistance = 1;
+      
 
+        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -50,6 +52,7 @@ namespace Prod_em_on_Team4
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            
             // TODO: Add your update logic here
 
             Spy.Update(gameTime);

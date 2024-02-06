@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Prod_em_on_Team4
 {
@@ -14,6 +16,11 @@ namespace Prod_em_on_Team4
         double shootDelay = 0;
 
         bool keyDown, clingingToWall;
+        bool coyoteTime = true;
+        int framesPassed = 0;
+        
+
+        
 
         List<Bullet> bullets = new List<Bullet>();
         Vector2 shootDirection = new Vector2(1,0); 
@@ -25,8 +32,8 @@ namespace Prod_em_on_Team4
         public static Point visiblePosition;
 
         public Player(Vector2 spritePosition, Color spriteColour) : base(spritePosition, spriteColour) {}
-
-        void MovePlayer()
+        
+        void MovePlayer(GameTime gameTime)
         {
             #region Vertical Movement
             _spriteBox.Y += playerYVelocity;
@@ -88,7 +95,7 @@ namespace Prod_em_on_Team4
                     _spriteBox.X = (horizontalMovement > 0 && Math.Abs(playerXVelocity) == 0) || (playerXVelocity > 0 && Math.Abs(playerXVelocity) > 0) ? t.SpriteBox.Left - _spriteBox.Width : _spriteBox.X = t.SpriteBox.Right;
                     
                     playerXVelocity = 0;
-                    if (!thereWasAYCollision) 
+                    if (!thereWasAYCollision && Keyboard.GetState().IsKeyDown(Keys.Left) || !thereWasAYCollision && Keyboard.GetState().IsKeyDown(Keys.Right))
                     {
                         clingingToWall = true;
                         jumpsAvailable = 1;
@@ -102,10 +109,23 @@ namespace Prod_em_on_Team4
             #endregion
 
             #region Jump
+            // code for the coyoteTime however using it disables double jump and i cant figure out a workaround that allows for both.
+
+            //if(!thereWasAYCollision && !clingingToWall)
+            //{
+                //framesPassed += 1;
+                //if(framesPassed > 8)
+                //{
+                    //coyoteTime = false;
+                //}
+               
+            //}
+            //if (thereWasAYCollision) { coyoteTime = true; framesPassed = 0; }   
+            
             // You can only jump if:
             // - You have the just pressed the up button
             // - You have jumps available
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) && jumpsAvailable > 0 && keyDown != true)
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) && jumpsAvailable > 0 && keyDown != true) //&& coyoteTime == true)
             {
                 playerYVelocity = -jumpAmount;
                 jumpsAvailable -= 1;
@@ -116,8 +136,11 @@ namespace Prod_em_on_Team4
                     // Makes the player jump away from the wall by checking whether you are on a wall to the left or to the right
                     playerXVelocity = (horizontalMovement < 0) ? wallJumpAmount : -wallJumpAmount;
                 }
+                
+                
             }
             if (keyDown) { keyDown = !Keyboard.GetState().IsKeyUp(Keys.Up); }
+
 
             // Brings the player's X Velocity to 0, whether it's positive or negative
             #endregion
@@ -156,7 +179,7 @@ namespace Prod_em_on_Team4
 
         public override void Update(GameTime gameTime)
         {
-            MovePlayer();
+            MovePlayer(gameTime);
             ShootBullet(gameTime);
             for (int i = 0; i < bullets.Count; i++) { bullets[i].Update(gameTime); }
         }
