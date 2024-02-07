@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Eventing.Reader;
+using System.Diagnostics;
 
 namespace Prod_em_on_Team4
 {
@@ -19,9 +20,6 @@ namespace Prod_em_on_Team4
         bool coyoteTime = true;
         int framesPassed = 0;
         
-
-        
-
         List<Bullet> bullets = new List<Bullet>();
         Vector2 shootDirection = new Vector2(1,0); 
 
@@ -35,6 +33,8 @@ namespace Prod_em_on_Team4
         
         void MovePlayer(GameTime gameTime)
         {
+
+
             #region Vertical Movement
             _spriteBox.Y += playerYVelocity;
             bool thereWasAYCollision = false; 
@@ -150,8 +150,6 @@ namespace Prod_em_on_Team4
             // All collision checks are made using the player's bounding box, not the actual player position.
             _spritePosition.X = _spriteBox.X;
             _spritePosition.Y = _spriteBox.Y;
-
-            visiblePosition = _spritePosition.ToPoint();
         }
 
         void ShootBullet(GameTime gameTime) 
@@ -179,8 +177,22 @@ namespace Prod_em_on_Team4
 
         public override void Update(GameTime gameTime)
         {
+
             MovePlayer(gameTime);
             ShootBullet(gameTime);
+
+            if (TileMap.HaveIJustPressed(Keys.Escape))
+            {
+                //_spritePosition = TileMap.playerSpawnPoint;
+                //Debug.WriteLine(_spriteBox.Y);
+                _spriteBox.X = TileMap.playerSpawnPoint.X;
+                _spriteBox.Y = TileMap.playerSpawnPoint.Y;
+
+                //Debug.WriteLine();
+            }
+
+            Debug.WriteLine(_spritePosition.ToString());
+
             for (int i = 0; i < bullets.Count; i++) { bullets[i].Update(gameTime); }
         }
 

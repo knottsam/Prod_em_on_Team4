@@ -21,6 +21,8 @@ namespace Prod_em_on_Team4
 
         public static void Follow(Sprite target)
         {
+            TileMap.LastKeyDown();
+
             Position.X = Lerp(Position.X, (-target.Center.X), moveAmount);
             Position.Y = Lerp(Position.Y, (-target.Center.Y), moveAmount);
 
@@ -33,10 +35,10 @@ namespace Prod_em_on_Team4
 
             Transform = position * offset;
 
-            if ((Math.Abs((-target.Center.Y) - Position.Y) > maxYOffset))
+            /*if ((Math.Abs((-target.Center.Y) - Position.Y) > maxYOffset))
             {
                 Position.Y -= (Math.Abs((-target.Center.Y) - Position.Y) - maxYOffset);
-            }
+            }*/
         }
 
     }

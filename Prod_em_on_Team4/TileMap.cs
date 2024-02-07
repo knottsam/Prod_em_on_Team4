@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -87,7 +88,7 @@ namespace Prod_em_on_Team4
             return tilesAround;
         }
 
-        static string levelName = "Very_Ridiculously_Big_Tile_Map";
+        static string levelName = "Bishop_Level";
 
         public static void GetTileMap(ContentManager Content)
         {
@@ -230,6 +231,14 @@ namespace Prod_em_on_Team4
             }
         }
 
+        public static void LastKeyDown()
+        {
+            if (Keyboard.GetState().GetPressedKeyCount() == 0)
+            {
+                lastKeyDown = Keys.None;
+            }
+        }
+
         static void ConfigureTileTypes()
         {
             foreach (string tilePos in tiles.Keys)
@@ -253,5 +262,17 @@ namespace Prod_em_on_Team4
                 }
             }
         }
+
+        static Keys lastKeyDown;
+        public static bool HaveIJustPressed(Keys keyToCheck)
+        {
+            if (Keyboard.GetState().IsKeyDown(keyToCheck) && lastKeyDown != keyToCheck)
+            {
+                lastKeyDown = keyToCheck;
+                return true;
+            }
+            return false;
+        }
+
     }
 }
