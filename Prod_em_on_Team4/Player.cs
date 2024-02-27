@@ -1,167 +1,260 @@
-﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Eventing.Reader;
-using System.Diagnostics;
+using System.Linq;
 
 namespace Prod_em_on_Team4
 {
-    internal class Player : Sprite
+    public class Player : Sprite
     {
-        float playerYVelocity = 0, playerXVelocity = 0, wallJumpAmount = 10;
-        int jumpsAvailable = 0, moveSpeed = 10;
+        float jumpOffWallAmount = 600f, glideAmount = 0.95f;
+        int jumpsAvailable = 0, moveSpeed = 600;
         double shootDelay = 0;
-
-        bool keyDown, clingingToWall;
-        bool coyoteTime = true;
-        int framesPassed = 0;
-        
-        List<Bullet> bullets = new List<Bullet>();
-        Vector2 shootDirection = new Vector2(1,0); 
-
-        // Constant values that will not be changed at runtime
-        const float jumpAmount = 20f, wallFriction = 0.9f, terminalVelocity = 64;
-        const int maxJumps = 2;
-
-        public Player(Vector2 spritePosition, Color spriteColour) : base(spritePosition, spriteColour) {}
-        
-        void MovePlayer(GameTime gameTime)
+        bool canDash = false;
+        public string State { get => playerStates.Max().ToString(); }
+        HashSet<PlayerState> playerStates = new();
+        enum PlayerState : sbyte
         {
+            Airborne = -1,
+            Jumping,        
+            Falling,
+            Standing,
+            Walking,        
+            Running,                      
+            Gliding,        
+            WallClimbing,    
+            Dashing
+        }
+        Dictionary<PlayerState, bool> playerUseState = new() { {PlayerState.Dashing, false}, { PlayerState.Gliding, false} };
+        List<Bullet> bullets = new List<Bullet>();
+        Vector2 facingDirection = new Vector2(1,0), dashVel = Vector2.Zero, Velocity = Vector2.Zero;
+        const float jumpAmount = 1200f, wallFriction = 0.9f; //terminalVelocity = 320;
+        const int maxJumps = 2, dashSpeed = 48;
 
+        AnimationManager myAnimations;
+        
+        public Player(Vector2 spritePosition, Color spriteColour) : base(ref spritePosition, ref spriteColour) 
+        {
+            _spriteBox = new RectangleF(ref _spritePosition);
+
+            myAnimations = new(new Dictionary<string, Animation>() 
+            {
+                {"Standing", new Animation(Globals.LoadTexture("UnVinced Spy"), 1, 0)},
+                {"Walking" , new Animation(Globals.LoadTexture("Spy Base Walk (f8)"), 8, 100)},
+                {"Running" , new Animation(Globals.LoadTexture("Spy Base Run (f9)"), 9, 100)},
+            });
+
+            SetAnimation("Standing");
+        
+            Bullet.LoadContent("GameBullet");
+        }
+
+        private void SetAnimation(string animationName)
+        {
+            myAnimations.SwitchAnimation(ref animationName);
+            _spriteBox.Size = myAnimations.Size().ToVector2();
+        }
+
+        RectangleF shadowYCollision()
+        {
+            float Y1 = (Velocity.Y > 0) ? _spriteBox.Bottom : _spriteBox.Top;
+            return new RectangleF(new Vector2(_spriteBox.Left,  Y1), new Vector2(_spriteBox.Right, Y1 + Velocity.Y));
+        }
+
+        void Move()
+        {
+            playerStates.Clear();
 
             #region Vertical Movement
-            _spriteBox.Y += playerYVelocity;
+
             bool thereWasAYCollision = false; 
-            // Checks all the tiles that are within 2 tiles around you, to see if you collide with them
-            foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint()))
+            RectangleF collisionArea = shadowYCollision();
+            playerStates.Add((Velocity.Y > 0) ? PlayerState.Falling : PlayerState.Jumping);
+            int signOfYVelocity = Math.Sign(Velocity.Y);
+            Point collisionAreaLocation = new Point((int)collisionArea.X, (int)collisionArea.Y);
+
+            for (int l = -1; (l + 1) < collisionArea.Height / 64; l++)
             {
-                if (_spriteBox.Intersects(t.SpriteBox)) // Collision!
+                foreach (Tile t in TileMap.GetTilesAround(new Point(collisionAreaLocation.X, collisionAreaLocation.Y + (64 * l * signOfYVelocity)), "Only-Y", signOfYVelocity))
                 {
+                    if (t.SpriteBox.Intersects(ref collisionArea))
+                    {
                     thereWasAYCollision = true;
+                        if (Velocity.Y > 0)
+                        {
+                            canDash = true;
+                            playerStates.Add(PlayerState.Standing);
+                            playerUseState[PlayerState.Gliding] = false;
+                            jumpsAvailable = maxJumps;
 
-                    // If you were moving up, you go to the bottom of the tile. If you were moving down, you go to the top of the tile
-                    _spriteBox.Y = (playerYVelocity > 0) ? (t.SpriteBox.Top - _spriteBox.Height) : t.SpriteBox.Bottom;
+                            _spriteBox.Y = (t.SpriteBox.Top - _spriteBox.Height);
+                        }
+                        else
+                        {
+                            _spriteBox.Y = t.SpriteBox.Bottom;
+                        }
 
-                    // If you are now standing on top of a tile, your jumps get reset so that you can double jump again
-                    if (playerYVelocity > 0) { jumpsAvailable = maxJumps; }
-                    playerYVelocity = 0;
-
+                        Velocity.Y = 1;
+                        dashVel.Y = 0;
                     break;
                 }
             }
-            if (!thereWasAYCollision) { playerYVelocity += (playerYVelocity < terminalVelocity) ? Game1.gravityAmount : (terminalVelocity - playerYVelocity); } // Player accelerates down (GRAVITY!!!)
+                if (thereWasAYCollision) { break; }
+            }
+            if (!thereWasAYCollision)
+            {
+                _spriteBox.Y += Velocity.Y;
+                if (dashVel.X == 0)
+                {
+                    Velocity.Y += Globals.gravityAmount * Globals.TotalSeconds;  // Player accelerates down (GRAVITY!!!)
+                }
+            }
             #endregion
 
             #region Horizontal Movement
-            /* Explaing Horizontal Movement User Input
              
-             If you are Pressing Right, 
-                - (Convert.ToInt32(Keyboard.GetState().IsKeyDown(Keys.Right)) returns 1
-             If you are not pressing right,
-                - (Convert.ToInt32(Keyboard.GetState().IsKeyDown(Keys.Right)) returns 0
+            bool amWalking = Keyboard.GetState().IsKeyDown(Keys.S);
 
-            This works with the subtrahend → (Convert.ToInt32(Keyboard.GetState().IsKeyDown(Keys.Right))
+            float horizontalMovement = (Velocity.X == 0) ? InputManager.Direction.X * (amWalking ? moveSpeed/2 : moveSpeed) * Globals.TotalSeconds : 0;
+            float xMove = Velocity.X + horizontalMovement;
 
-            If you press right,
-                - horizontalMovement = (1 - 0) * moveSpeed
-            If you press left,
-                - horizontalMovement = (0 - 1) * moveSpeed
-            If you press both left and right,
-                - horizontalMovement = (1 - 1) * moveSpeed
-            If you press neither left nor right,
-                - horizontalMovement = (0 - 0) * moveSpeed
-             */
-            int horizontalMovement =
-                (Convert.ToInt32(Keyboard.GetState().IsKeyDown(Keys.Right))
-                - Convert.ToInt32(Keyboard.GetState().IsKeyDown(Keys.Left)))
-                * moveSpeed;
+            playerUseState[PlayerState.WallClimbing] = false;
+            if (xMove != 0)
+            {
+                myAnimations.UpdateAnimation();
+                if (horizontalMovement != 0)
+                {
+                    if (!amWalking)
+                    {
+                        playerStates.Add(PlayerState.Running);
+                    }
+                    else
+                    {
+                        playerStates.Add(PlayerState.Walking);
+                    }
 
-            // If the player velocity is zero, the player mvoes by the horizontal movement.
-            // If there is a non-zero player velocity, the player moves by the player velocity
-            _spriteBox.X += (Math.Abs(playerXVelocity) > 0) ? playerXVelocity : horizontalMovement;
+                    facingDirection.X = Math.Sign(horizontalMovement);
+                    //facingDirection.Normalize();
+                    _spriteBox.X += horizontalMovement;
+                }
+                else { _spriteBox.X += Velocity.X; }
 
-            // Checks all the tiles that are within 2 tiles around you, to see if you collide with them
-            foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint())) 
+                foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint(), "Only-X", Math.Sign(xMove)))
             {
                 if (_spriteBox.Intersects(t.SpriteBox)) // Collision!
                 {
-                    // If you were moving right, you go to the left of the tile. If you were moving left, you go to the right of the tile
-                    _spriteBox.X = (horizontalMovement > 0 && Math.Abs(playerXVelocity) == 0) || (playerXVelocity > 0 && Math.Abs(playerXVelocity) > 0) ? t.SpriteBox.Left - _spriteBox.Width : _spriteBox.X = t.SpriteBox.Right;
+                        _spriteBox.X = ((xMove) > 0) ? t.SpriteBox.Left - _spriteBox.Width : t.SpriteBox.Right;
                     
-                    playerXVelocity = 0;
-                    if (!thereWasAYCollision && Keyboard.GetState().IsKeyDown(Keys.Left) || !thereWasAYCollision && Keyboard.GetState().IsKeyDown(Keys.Right))
+                        if (!thereWasAYCollision)
                     {
-                        clingingToWall = true;
+                            playerUseState[PlayerState.WallClimbing] = true;
+                            playerStates.Add(PlayerState.WallClimbing);
+                            canDash = true;
+
                         jumpsAvailable = 1;
-                        if (playerYVelocity > 0) { playerYVelocity -= wallFriction; }
+                            if (Velocity.Y > 0) { Velocity.Y -= wallFriction; }
                     }
+                        Velocity.X = dashVel.X = 0;
                     break;
+                        
                 }
             }
-            if (thereWasAYCollision) { clingingToWall = false; }
-            if (Math.Abs(playerXVelocity) > 0) { playerXVelocity -= Math.Sign(playerXVelocity) * Game1.airResistance; }
+            }
+            if (Velocity.X != 0) 
+            {
+                float xVelocityDelta = Math.Sign(Velocity.X) * Globals.airResistance * Globals.TotalSeconds * ((playerUseState[PlayerState.Dashing]) ? 6f : 1);
+                Velocity.X -= (Math.Abs(Velocity.X) - xVelocityDelta > 0) ?  xVelocityDelta: Velocity.X;
+            }
+
+            if ((xMove) == 0 && (Velocity.Y > 0 && thereWasAYCollision))
+            {
+                playerStates.Add(PlayerState.Standing);
+            }
             #endregion
 
             #region Jump
-            // code for the coyoteTime however using it disables double jump and i cant figure out a workaround that allows for both.
-
-            //if(!thereWasAYCollision && !clingingToWall)
-            //{
-                //framesPassed += 1;
-                //if(framesPassed > 8)
-                //{
-                    //coyoteTime = false;
-                //}
-               
-            //}
-            //if (thereWasAYCollision) { coyoteTime = true; framesPassed = 0; }   
-            
-            // You can only jump if:
-            // - You have the just pressed the up button
-            // - You have jumps available
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) && jumpsAvailable > 0 && keyDown != true) //&& coyoteTime == true)
+            if (InputManager.HaveIJustPressed(Keys.Up) && jumpsAvailable > 0)
             {
-                playerYVelocity = -jumpAmount;
+                Velocity.Y = -jumpAmount * Globals.TotalSeconds;
                 jumpsAvailable -= 1;
-                keyDown = true;
 
-                if(clingingToWall)
+                if (playerUseState[PlayerState.WallClimbing])
                 {
-                    // Makes the player jump away from the wall by checking whether you are on a wall to the left or to the right
-                    playerXVelocity = (horizontalMovement < 0) ? wallJumpAmount : -wallJumpAmount;
-                }
-                
-                
+                    Velocity.X = (horizontalMovement < 0) ? jumpOffWallAmount * Globals.TotalSeconds : -jumpOffWallAmount * Globals.TotalSeconds;
+                }  
             }
-            if (keyDown) { keyDown = !Keyboard.GetState().IsKeyUp(Keys.Up); }
-
-
-            // Brings the player's X Velocity to 0, whether it's positive or negative
             #endregion
+            #region Glide
+            else if (Keyboard.GetState().IsKeyDown(Keys.Up) && jumpsAvailable == 0 && Velocity.Y > 0) 
+            {
+                if (playerUseState[PlayerState.Gliding])
+                {
+                    Velocity.Y = -Velocity.Y * Globals.TotalSeconds;
+                    playerUseState[PlayerState.Gliding] = true;
+                }
+                Velocity.Y -= glideAmount * Globals.gravityAmount * Globals.TotalSeconds;
+                playerStates.Add(PlayerState.Gliding);
+            }
+            #endregion
+               
+            if (playerUseState[PlayerState.Dashing])
+            { 
+                if (Velocity.X == 0)
+                {
+                    dashVel.X = 0;
+                }
+                if (Velocity.Y == 1)
+                {
+                    dashVel.Y = 0;
+                }
+            
+                if (dashVel == Vector2.Zero)
+            {
+                    playerUseState[PlayerState.Dashing] = false;
+                }
+            }
 
-            // Sets the sprites actual Position.
-            // We draw the player using its _spritePosition.
-            // All collision checks are made using the player's bounding box, not the actual player position.
             _spritePosition.X = _spriteBox.X;
             _spritePosition.Y = _spriteBox.Y;
+                }
+                
+        void AttackDash()
+        {
+            if (InputManager.HaveIJustPressed(Keys.X) && canDash)
+            {
+                Vector2 dashDirection = InputManager.Direction.ToVector2();
+                
+                if ( ((dashDirection.X != 0) ^ (dashDirection.Y != 0)) && dashDirection.Y >= 0)
+                {
+                    dashDirection.Normalize();
+                }
+                else
+                {
+                    dashDirection = facingDirection;
+            }
+
+                playerUseState[PlayerState.Dashing] = true;
+
+                jumpsAvailable = 0;
+                Velocity = dashVel = dashDirection * dashSpeed; 
+                canDash = false;
+            }
         }
 
-        void ShootBullet(GameTime gameTime) 
+        void ShootBullet() 
         {
-            if (shootDelay >= 0.5)
+            if (shootDelay >= 0.1)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                if (Keyboard.GetState().IsKeyDown(Keys.Z))
                 {
                     bullets.Add(
                     new Bullet
                     (
-                        new Vector2(_spritePosition.X + _spriteTexture.Width, _spritePosition.Y + (int)(0.5 * _spriteTexture.Height)), 
+                        new Vector2(_spritePosition.X + _spriteBox.Width, _spritePosition.Y + (int)(0.5 * _spriteBox.Height)), 
                         Color.Red, 
-                        shootDirection
+                        ref facingDirection
                     )
                     );
                     shootDelay = 0;
@@ -169,39 +262,59 @@ namespace Prod_em_on_Team4
             }
             else 
             {
-                shootDelay += (1 / gameTime.ElapsedGameTime.TotalMilliseconds);
+                shootDelay += (1 / Globals.TotalMilliseconds);
             }
         }
 
-        public override void Update(GameTime gameTime)
+        void ManageAnimation()
         {
-
-            MovePlayer(gameTime);
-            ShootBullet(gameTime);
-
-            if (TileMap.HaveIJustPressed(Keys.Escape))
+            switch (playerStates.Max().ToString())
             {
-                //_spritePosition = TileMap.playerSpawnPoint;
-                //Debug.WriteLine(_spriteBox.Y);
-                _spriteBox.X = TileMap.playerSpawnPoint.X;
-                _spriteBox.Y = TileMap.playerSpawnPoint.Y;
+                case "Walking":
+                    if (myAnimations.currentAnimation != "Walking")
+        {
+                        SetAnimation("Walking");
+                    }
+                break;
 
-                //Debug.WriteLine();
+                case "Running":
+                    if (myAnimations.currentAnimation != "Running")
+            {
+                        SetAnimation("Running");
+                    }
+                    break;
+
+                case "Standing":
+                    if (myAnimations.currentAnimation != "Standing")
+                    {
+                        SetAnimation("Standing");
+                    }
+                    break;
+            }
             }
 
-            Debug.WriteLine(_spritePosition.ToString());
+        public void Update()
+        {
+            Move();
+            ShootBullet();
+            AttackDash();
 
-            for (int i = 0; i < bullets.Count; i++) { bullets[i].Update(gameTime); }
+            ManageAnimation();
+
+            foreach (Bullet bullet in bullets) { bullet.Update(); }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
             for (int i = 0; i < bullets.Count; i++)
             {
-                bullets[i].Draw(spriteBatch);
+                bullets[i].Draw();
                 if (bullets[i].IHitSomething) { bullets.RemoveAt(i); }
             }
-            base.Draw(spriteBatch);
+
+            myAnimations.Draw(ref _spritePosition, (facingDirection.X == 1) ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+
+            //Globals.spriteBatch.Draw(Globals.defTexture, shadowCollision().ToRectange(), Color.Orange);
         }
     }
 }

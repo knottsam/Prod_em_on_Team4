@@ -1,14 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 
 namespace Prod_em_on_Team4
 {
     internal class Tile : Sprite
     {
-
         public static Texture2D _tileTexture;
 
         public Dictionary<string, byte> tilesAround = new Dictionary<string, byte>()
@@ -25,21 +23,25 @@ namespace Prod_em_on_Team4
 
         public int _tileType = 1;
 
-        public Tile(Vector2 spritePosition, Color spriteColour) : base(spritePosition, spriteColour)
+        private float size;
+
+        public Tile(Vector2 spritePosition, Color spriteColour) : base(ref spritePosition, ref spriteColour)
         {
-            _spriteBox = new RectangleF(spritePosition, TileMap.tileSize, TileMap.tileSize);
+            size = TileMap.tileSize;
+            _spriteBox = new RectangleF(ref spritePosition, ref size, ref size);
         }
 
-        public void SetSourceRect(int type)
+        public void SetSourceRect()
         {
-            if (type == -3)
+
+            if (_tileType == -3)
             {
-                type = TileMap.tileTypes[tileTypeValue()];
-                srcRect = new Rectangle((type % TileMap.tileSheetColumns) * TileMap.tileSize, (type / TileMap.tileSheetColumns) * TileMap.tileSize, TileMap.tileSize, TileMap.tileSize);
+                _tileType = TileMap.tileTypes[tileTypeValue()];
+                srcRect = new Rectangle((_tileType % TileMap.tileSheetColumns) * TileMap.tileSize, (_tileType / TileMap.tileSheetColumns) * TileMap.tileSize, TileMap.tileSize, TileMap.tileSize);
             }
             else
             {
-                srcRect = new Rectangle((type % TileMap.tileSheetColumns) * TileMap.tileSize, (type / TileMap.tileSheetColumns) * TileMap.tileSize, TileMap.tileSize, TileMap.tileSize);
+                srcRect = new Rectangle((_tileType % TileMap.tileSheetColumns) * TileMap.tileSize, (_tileType / TileMap.tileSheetColumns) * TileMap.tileSize, TileMap.tileSize, TileMap.tileSize);
             }
         }
 
@@ -57,25 +59,24 @@ namespace Prod_em_on_Team4
             return total;
         }
 
-        public static void LoadTileTexture(ContentManager myContent, string fileName)
+        public static void LoadTileTexture(string fileName)
         {
-            myContent.RootDirectory = "Content";
-            _tileTexture = myContent.Load<Texture2D>(fileName);
+            _tileTexture = Globals.Content.Load<Texture2D>(fileName);
         }
 
         Rectangle srcRect;
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
             if (_tileType == 0)
             {
                 if (TileMap.devMode)
                 {
-                    spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, _spriteColour);
+                    Globals.spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, _spriteColour);
                 }
             }
             else
             {
-                spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, _spriteColour);
+                Globals.spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, _spriteColour);
             }
         }
     }

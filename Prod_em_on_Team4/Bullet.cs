@@ -17,13 +17,13 @@ namespace Prod_em_on_Team4
 
         static Texture2D _bulletTexture;
 
-        public Bullet() { }
-        public Bullet(Vector2 spritePosition, Color spriteColour, Vector2 direction) : base(spritePosition, spriteColour)
+        public Bullet(Vector2 spritePosition, Color spriteColour, ref Vector2 direction) : base(ref spritePosition, ref spriteColour)
         {
             _direction = direction;
             direction.Normalize();
             _spritePosition.Y -= 0.5f * _bulletTexture.Height;
-            _spriteBox = new RectangleF(_spritePosition.X, _spritePosition.Y, _bulletTexture.Width, _bulletTexture.Height);
+            _spriteBox = new RectangleF(ref _spritePosition, ref _bulletTexture);
+
 
             foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint()))
             {
@@ -35,13 +35,12 @@ namespace Prod_em_on_Team4
             }
         }
 
-        public static new void LoadContent(ContentManager myContent, string fileName)
+        public static void LoadContent(string fileName)
         {
-            myContent.RootDirectory = "Content";
-            _bulletTexture = myContent.Load<Texture2D>(fileName);
+            _bulletTexture = Globals.Content.Load<Texture2D>(fileName);
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update()
         {
             float xMove = (_direction.X * _bulletSpeed);
             float yMove = (_direction.Y * _bulletSpeed);
@@ -76,13 +75,11 @@ namespace Prod_em_on_Team4
             }
 
             _spritePosition = _spriteBox.Location;
-
-            base.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
-            spriteBatch.Draw(_bulletTexture, _spritePosition, _spriteColour);
+            Globals.spriteBatch.Draw(_bulletTexture, _spritePosition, _spriteColour);
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -12,13 +10,20 @@ namespace Prod_em_on_Team4
 {
     internal static class TileMap
     {
-        static Tuple<int, int>[] tileAroundPositions = new Tuple<int, int>[21];
-        public static bool devMode = false;
-
-        public static int tileSize = 64;
-        public static int tileSheetColumns = 12;
-
-        static Dictionary<string, Vector2> tilesAroundTile = new Dictionary<string, Vector2>()
+        static readonly List <Tuple<int, int>> tileAroundPositions = new() 
+        {
+            Tuple.Create(-2, -2),
+            Tuple.Create(-1, -2),
+            Tuple.Create(0, -2),
+            Tuple.Create(-2, -1),
+            Tuple.Create(0, -1),
+            Tuple.Create(-2, 0),
+            Tuple.Create(-1, 0),
+            Tuple.Create(0, 0),
+        };
+        static readonly string levelName = "Testing";
+        static readonly Dictionary<Point, Tile> tiles = new ();
+        static readonly Dictionary<string, Vector2> tilesAroundTile = new()
         {
             { "t", new Vector2(0, 1) },
             { "tr", new Vector2(1, 1) },
@@ -29,7 +34,8 @@ namespace Prod_em_on_Team4
             { "l", new Vector2(-1, 0) },
             { "tl", new Vector2(-1, 1) }
         };
-        public static Dictionary<byte, int> tileTypes = new Dictionary<byte, int>()
+
+        public static readonly Dictionary<byte, int> tileTypes = new()
         {
             { 0, 1 }, { 255, 2 }, { 199, 3 }, { 124, 4 },
             { 31, 5 }, { 241 , 6 }, { 193, 7 }, { 7, 8 },
@@ -44,235 +50,240 @@ namespace Prod_em_on_Team4
             { 93, 41 },{ 221, 42 }, { 119, 43 }, { 81, 44 },
             { 21, 45 }, { 84 ,46 }, { 69, 47 }
         };
-
-        private static Dictionary<string, Tile> tiles = new Dictionary<string, Tile>();
-
+        public static readonly bool devMode = false;
         public static Vector2 playerSpawnPoint = Vector2.Zero;
+        public static readonly int tileSize = 64, tileSheetColumns = 12;
 
-        /*static Tile CheckIfTile(Point proposedPosition) 
+        static void ConfigureTileTypes()
         {
-            foreach (KeyValuePair<string, Tile> kvpT in tiles)
+            foreach (Point tilePos in tiles.Keys)
             {
-                if (kvpT.Key == $"{proposedPosition.X},{proposedPosition.Y}")
+                SetSurroundingsDataForTileAt(tilePos);
+                if (tiles[tilePos]._tileType != 0 && tiles[tilePos]._tileType != -3)
                 {
-                    return kvpT.Value;
+                    tiles[tilePos]._tileType = tileTypes[tiles[tilePos].tileTypeValue()];
+                }
+
+                tiles[tilePos].SetSourceRect();
                 }
             }
-            return null;
-        }*/
 
-        //static List<Tile> drawTiles = new();
-
-        public static List<Tile> GetTilesAround(Point point)
+        public static void DrawTiles() 
         {
-            List<Tile> tilesAround = new List<Tile>();
-            //drawTiles = new();
+            foreach (Tile t in tiles.Values) t.Draw();
+        }
 
-            Point proposedTile = new() ;
-            Tile checkTile;
+        #region Get The Tiles Around A Point Functions
+        static bool AcknowledgeTile(ref string inclusionParamater, ref int normalisedVelocity, Tuple<int, int> tilePos)
+        {
+            switch (inclusionParamater)
+            {
+                case "Only-Y":
+                    if (normalisedVelocity + tilePos.Item2 == -1)
+                {
+                        return false;
+                    }
+                    if (tilePos.Item2 == -1)
+                    {
+                        return false;
+                    }
+                    break;
+                case "Only-X":
+                    if (normalisedVelocity + tilePos.Item1 == -1)
+                        {
+                        return false;
+                        }
+                    if (tilePos.Item1 == -1)
+                    {
+                        return false;
+                    }
+                    break;
+                }
+            return true;
+            }
+        static void ParseTileProposition(ref List<Tile> tilesAround, ref Point proposedTilePos)
+            {  
+            Tile checkTile = (tiles.ContainsKey(proposedTilePos)) ? tiles[proposedTilePos] : null;
+            if (checkTile != null && checkTile._tileType != -3)
+                {
+                tilesAround.Add(checkTile);
+                            }
+                        }
+        public static List<Tile> GetTilesAround(Point point, string inclusionParamater = "", int normalisedVelocity = 0)
+        {
+            List<Tile> tilesAround = new();
+            Point proposedTile = new();
 
             foreach (Tuple<int, int> tilePos in tileAroundPositions)
             {
+                if (!AcknowledgeTile(ref inclusionParamater, ref normalisedVelocity, tilePos)) continue;
+
                 proposedTile.X = ((((point.X + tileSize) / tileSize) + tilePos.Item1) * tileSize);
                 proposedTile.Y = ((((point.Y + tileSize) / tileSize) + tilePos.Item2) * tileSize);
 
-                //drawTiles.Add(new Tile(new Vector2(proposedTile.X, proposedTile.Y), Color.Blue));
-
-                checkTile = (tiles.ContainsKey($"{proposedTile.X},{proposedTile.Y}")) ? tiles[$"{proposedTile.X},{proposedTile.Y}"] : null;
-                if (checkTile != null && checkTile._tileType != -3) 
-                {
-                    tilesAround.Add(checkTile);
+                ParseTileProposition(ref tilesAround, ref proposedTile);
                 }
-            }
 
             return tilesAround;
-        }
-
-        static string levelName = "Bishop_Level";
-
-        public static void GetTileMap(ContentManager Content)
-        {
-            int lowerBound = -3;
-            int upperBound = 1;
-
-            int count = 0;
-            for (int i = lowerBound; i < (upperBound + 1); i++) 
-            {
-                for (int j = lowerBound; j < (upperBound + 1); j++) 
-                {
-                    if (i == lowerBound || i == upperBound)
-                    {
-                        if (j == lowerBound || j == upperBound)
-                        {
-                            continue;
-                        }
-                    }
-
-                    tileAroundPositions[count] = Tuple.Create(i, j);
-                    count++;
-                }
             }
+        #endregion
 
-            Tile.LoadTileTexture(Content, "UnVincedTilesV2");
-
-            int fileMaxLines = File.ReadAllBytes($"{levelName}.tilemap").Count(s => s == 15);
-
-            using (var stream = File.Open($"{levelName}.tilemap", FileMode.Open))
-            {  
-                using (BinaryReader br = new BinaryReader(stream))
-                {
-                    try
-                    {
-                        int i = 0;
-                        int lineNumber = 1;
-                        while (true)
-                        {
-                            switch ((int)br.ReadByte())
+        #region Set Data For Surrounding Tiles Functions
+        static bool ThereAreTilesAboveOrBelow(ref string tilePosition, Point checkTilePos)
+        {
+            switch (tilePosition[0])
+            {
+                        case 't':
+                    checkTilePos.Y -= tileSize;
+                    if (tiles.ContainsKey(checkTilePos))
                             {
-                                case 1:
-                                    tiles.Add($"{i * tileSize},{lineNumber * tileSize}", new Tile(new Vector2(i * tileSize, lineNumber * tileSize), Color.White));
-                                    tiles[$"{i * tileSize},{lineNumber * tileSize}"]._tileType = 0;
-                                    i++;
-                                    break;
-                                case 2:
-                                    tiles.Add($"{i * tileSize},{lineNumber * tileSize}", new Tile(new Vector2(i * tileSize, lineNumber * tileSize), Color.White));
-                                    i++;
-                                    break;
-                                case 3:
-                                    playerSpawnPoint = new Vector2(i * tileSize + 0.5f * tileSize, lineNumber * tileSize);
-                                    i++;
-                                    break;
-                                case 4:
-                                    tiles.Add($"{i * tileSize},{lineNumber * tileSize}", new Tile(new Vector2(i * tileSize, lineNumber * tileSize), Color.White));
-                                    tiles[$"{i * tileSize},{lineNumber * tileSize}"]._tileType = -3;
-                                    i++;
-                                    break;
-                                case 15:
-                                    lineNumber++;
-                                    i = 0;
-                                    break;
-                                default:
-                                    i++;
-                                    break;
+                        if (tiles[checkTilePos]._tileType != 0) return true;
                             }
-                        }
+                            break;
+                        case 'b':
+                    checkTilePos.Y += tileSize;
+                    if (tiles.ContainsKey(checkTilePos))
+                            {
+                        if (tiles[checkTilePos]._tileType != 0) return true;
+                            }
+                            break;
                     }
-                    catch (EndOfStreamException e) { }
-
-                    ConfigureTileTypes();
-                }
-            }
+            return false;
         }
-
-        public static void DrawTiles(SpriteBatch SB) 
-        {
-            foreach (Tile t in tiles.Values)
+        static bool ThereAreTilesLeftOrRight(ref string tilePosition, Point checkTilePos)
+                    {
+            switch (tilePosition[1])
             {
-                t.Draw(SB);
+                        case 'l':
+                    checkTilePos.X += tileSize;
+                    if (tiles.ContainsKey(checkTilePos))
+                            {
+                        if (tiles[checkTilePos]._tileType != 0) return true;
+                            }
+                            break;
+                        case 'r':
+                    checkTilePos.X -= tileSize;
+                    if (tiles.ContainsKey(checkTilePos))
+                            {
+                        if (tiles[checkTilePos]._tileType != 0) return true;
+                            }
+                            break;
+                    }
+            return false;
+        }
+        static void HandleCornerTile(ref Point checkTilePos, ref Point tilePositionKey, ref string positionAroundTile)
+        {
+            bool cornerCanBeAllowed =
+                        ThereAreTilesAboveOrBelow(ref positionAroundTile, checkTilePos)
+                        &&
+                        ThereAreTilesLeftOrRight(ref positionAroundTile, checkTilePos);
+
+            if (cornerCanBeAllowed
+                && (tiles.ContainsKey(checkTilePos) && tiles[checkTilePos]._tileType != 0))
+                    {
+                tiles[tilePositionKey].tilesAround[positionAroundTile] = (byte)1;
+                    }
+                    else
+                    {
+                tiles[tilePositionKey].tilesAround[positionAroundTile] = 0;
+            }
+                    }
+        static void HandleNonCornerTile(ref Point checkTilePos, ref Point tilePositionKey, ref string positionAroundTile)
+        {
+            if (tiles.ContainsKey(checkTilePos) && tiles[checkTilePos]._tileType != 0)
+            {
+                tiles[tilePositionKey].tilesAround[positionAroundTile] = (byte)1;
+                }
+                else
+                {
+                tiles[tilePositionKey].tilesAround[positionAroundTile] = (byte)0;
             }
         }
-
-        static void CheckAroundTileAt(string tilePositionKey)
+        static void SetSurroundingsDataForTileAt(Point tilePositionKey)
         {
             foreach (KeyValuePair<string, Vector2> kvp in tilesAroundTile)
             {
                 int checkTileX = (int)(tiles[tilePositionKey].Position.X + (kvp.Value.X * tileSize));
                 int checkTileY = (int)(tiles[tilePositionKey].Position.Y + (kvp.Value.Y * tileSize));
+                Point checkTilePos =  new(checkTileX, checkTileY);
+                string positionAroundTile = kvp.Key;
 
-                if (kvp.Key.Length == 2)
-                {
-                    int allowCorner = 0;
-
-                    switch (kvp.Key[0])
-                    {
-                        case 't':
-                            if (tiles.ContainsKey($"{checkTileX},{checkTileY - tileSize}"))
-                            {
-                                if (tiles[$"{checkTileX},{checkTileY - tileSize}"]._tileType != 0) allowCorner++;
-                            }
-                            break;
-                        case 'b':
-                            if (tiles.ContainsKey($"{checkTileX},{checkTileY + tileSize}"))
-                            {
-                                if (tiles[$"{checkTileX},{checkTileY + tileSize}"]._tileType != 0) allowCorner++;
-                            }
-                            break;
-                    }
-
-                    switch (kvp.Key[1])
-                    {
-                        case 'l':
-                            if (tiles.ContainsKey($"{checkTileX + tileSize},{checkTileY}"))
-                            {
-                                if (tiles[$"{checkTileX + tileSize},{checkTileY}"]._tileType != 0) allowCorner++;
-                            }
-                            break;
-                        case 'r':
-                            if (tiles.ContainsKey($"{checkTileX - tileSize},{checkTileY}"))
-                            {
-                                if (tiles[$"{checkTileX - tileSize},{checkTileY}"]._tileType != 0) allowCorner++;
-                            }
-                            break;
-                    }
-
-                    if (allowCorner == 2)
-                    {
-                        tiles[tilePositionKey].tilesAround[kvp.Key] = (tiles.ContainsKey($"{checkTileX},{checkTileY}") && tiles[$"{checkTileX},{checkTileY}"]._tileType != 0) ? (byte)1 : (byte)0;
-                    }
-                    else
-                    {
-                        tiles[tilePositionKey].tilesAround[kvp.Key] = 0;
-                    }
+                if (positionAroundTile.Length == 2)
+        {
+                    HandleCornerTile(
+                        ref checkTilePos, 
+                        ref tilePositionKey, 
+                        ref positionAroundTile);
                 }
                 else
-                {
-                    tiles[tilePositionKey].tilesAround[kvp.Key] = (tiles.ContainsKey($"{checkTileX},{checkTileY}") && tiles[$"{checkTileX},{checkTileY}"]._tileType != 0) ? (byte)1 : (byte)0;
+            {
+                    HandleNonCornerTile(ref 
+                        checkTilePos, 
+                        ref tilePositionKey, 
+                        ref positionAroundTile);
                 }
             }
         }
+        #endregion
 
-        public static void LastKeyDown()
-        {
-            if (Keyboard.GetState().GetPressedKeyCount() == 0)
-            {
-                lastKeyDown = Keys.None;
-            }
-        }
-
-        static void ConfigureTileTypes()
-        {
-            foreach (string tilePos in tiles.Keys)
-            {
-                if (tilePos != null)
+        #region Load Map From File Functions
+        static void AssignTileByByte(int byteValueToInt, Point tilePos, ref int row, ref int column)
                 {
-                    CheckAroundTileAt(tilePos);
-                    if (tiles[tilePos]._tileType != 0 && tiles[tilePos]._tileType != -3)
+            switch (byteValueToInt)
                     {
-                        tiles[tilePos]._tileType = tileTypes[tiles[tilePos].tileTypeValue()];
+                case 1:
+                    tiles.Add(tilePos, new Tile(new Vector2(column * tileSize, row * tileSize), Color.White));
+                    tiles[tilePos]._tileType = 0;
+                    column++;
+                    break;
+                case 2:
+                    tiles.Add(tilePos, new Tile(new Vector2(column * tileSize, row * tileSize), Color.White));
+                    column++;
+                    break;
+                case 3:
+                    playerSpawnPoint = new Vector2(column * tileSize + 0.5f * tileSize, row * tileSize);
+                    column++;
+                    break;
+                case 4:
+                    tiles.Add(tilePos, new Tile(new Vector2(column * tileSize, row * tileSize), Color.White));
+                    tiles[tilePos]._tileType = -3;
+                    column++;
+                    break;
+                case 15:
+                    row++;
+                    column = 0;
+                    break;
+                default:
+                    column++;
+                    break;
+            }
                     }
-
-                    if (tiles[tilePos]._tileType == -3)
+        static void GetTilesFromFile(BinaryReader binaryReader)
+        {
+            try
                     {
-                        tiles[tilePos].SetSourceRect(-3);
-                    }
-                    else
+                int lineColumn = 0, lineNumber = 1;
+                Point tilePos;
+                while (true)
                     {
-                        tiles[tilePos].SetSourceRect(tiles[tilePos]._tileType);
-                    }
+                    tilePos = new(lineColumn * tileSize, lineNumber * tileSize);
+                    AssignTileByByte((int)binaryReader.ReadByte(), tilePos, ref lineNumber, ref lineColumn);
+                }
+            }
+            catch (EndOfStreamException) { }
+        }
+        public static void GetTileMap()
+        {
+            using (FileStream stream = File.Open($"{levelName}.tilemap", FileMode.Open))
+        {
+                using (BinaryReader br = new(stream))
+            {
+                    GetTilesFromFile(br);
+                    Tile.LoadTileTexture("UnVincedTilesV2");
+                    ConfigureTileTypes();
                 }
             }
         }
-
-        static Keys lastKeyDown;
-        public static bool HaveIJustPressed(Keys keyToCheck)
-        {
-            if (Keyboard.GetState().IsKeyDown(keyToCheck) && lastKeyDown != keyToCheck)
-            {
-                lastKeyDown = keyToCheck;
-                return true;
-            }
-            return false;
-        }
-
+        #endregion
     }
 }

@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System;
-using System.Diagnostics;
 
 namespace Prod_em_on_Team4
 {
@@ -12,49 +9,38 @@ namespace Prod_em_on_Team4
         private SpriteBatch _spriteBatch;
         private Player Spy;
 
-        public static int screenWidth, screenHeight;
-        public static float gravityAmount = 1;
-        public static float airResistance = 1;
-      
-
-        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _graphics.PreferredBackBufferWidth = 1000;
-            _graphics.PreferredBackBufferHeight = 800;
-
-            screenWidth = _graphics.PreferredBackBufferWidth;
-            screenHeight = _graphics.PreferredBackBufferHeight;
+            _graphics.PreferredBackBufferWidth = Globals.screenWidth;
+            _graphics.PreferredBackBufferHeight = Globals.screenHeight;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Globals.Content = Content;
+            Globals.spriteBatch = _spriteBatch;
+            Globals.graphicsDevice = GraphicsDevice;
             
-            Bullet.LoadContent(Content, "GameBullet");
-            // TODO: use this.Content to load your game content here
-
-            TileMap.GetTileMap(Content);
-            Spy = new Player(TileMap.playerSpawnPoint, Color.AliceBlue);
-            Spy.LoadContent(Content, "player2.0");
+            TileMap.GetTileMap();
+            PlayerManager.Spy = new Player(TileMap.playerSpawnPoint, Color.AliceBlue);
+            Globals.DefTexture();
         }
 
         protected override void Update(GameTime gameTime)
         {   
-            // TODO: Add your update logic here
+            Globals.Update(ref gameTime);
 
-            Spy.Update(gameTime);
-
-            Camera.Follow(Spy);
+            PlayerManager.Update();
+            Camera.Follow(PlayerManager.Spy);
 
             base.Update(gameTime);
         }
@@ -62,12 +48,13 @@ namespace Prod_em_on_Team4
         protected override void Draw(GameTime gameTime)
         { 
             GraphicsDevice.Clear(Color.Beige);
-            _spriteBatch.Begin(transformMatrix:Camera.Transform, samplerState: SamplerState.PointClamp);
+            Globals.spriteBatch.Begin(transformMatrix:Camera.Transform, samplerState: SamplerState.PointClamp);
 
-            Spy.Draw(_spriteBatch);
-            TileMap.DrawTiles(_spriteBatch);
+            PlayerManager.DrawPlayer();
+            TileMap.DrawTiles();
+            PlayerManager.DrawPlayerState();
 
-            _spriteBatch.End();
+            Globals.spriteBatch.End();
 
             base.Draw(gameTime);
         }

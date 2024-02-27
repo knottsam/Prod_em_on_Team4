@@ -18,27 +18,21 @@ namespace Prod_em_on_Team4
         public Sprite()
         { }
 
-        public Sprite(Vector2 spritePosition, Color spriteColour)
+        public Sprite(ref Vector2 spritePosition, ref Color spriteColour)
         {
             _spriteColour = spriteColour;
             _spritePosition = spritePosition;
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw()
         {
-            spriteBatch.Draw(_spriteTexture, _spritePosition, _spriteColour);
+            Globals.spriteBatch.Draw(_spriteTexture, _spritePosition, _spriteColour);
         }
 
-        public virtual void LoadContent(ContentManager myContent, string fileName)
+        public virtual void LoadContent(ref string fileName)
         {
-            myContent.RootDirectory = "Content";
-            _spriteTexture = myContent.Load<Texture2D>(fileName);
-            _spriteBox = new RectangleF(_spritePosition, _spriteTexture.Width, _spriteTexture.Height);
-        }
-
-        public virtual void Update(GameTime gameTime)
-        {
-
+            _spriteTexture = Globals.Content.Load<Texture2D>(fileName);
+            _spriteBox = new RectangleF(ref _spritePosition, ref _spriteTexture);
         }
 
         public Color Colour
