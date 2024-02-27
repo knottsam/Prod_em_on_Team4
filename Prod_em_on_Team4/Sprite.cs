@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using System;
-
 
 namespace Prod_em_on_Team4
 {
@@ -14,9 +11,6 @@ namespace Prod_em_on_Team4
         protected Color _spriteColour;
 
         public Vector2 Center { get => new Vector2(_spritePosition.X + (_spriteBox.Width / 2), _spritePosition.Y + (_spriteBox.Height / 2)); }
-
-        public Sprite()
-        { }
 
         public Sprite(ref Vector2 spritePosition, ref Color spriteColour)
         {
@@ -53,5 +47,4 @@ namespace Prod_em_on_Team4
             set { _spriteBox = value; }
         }
     }
-
 }

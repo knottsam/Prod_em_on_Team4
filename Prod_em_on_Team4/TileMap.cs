@@ -65,8 +65,8 @@ namespace Prod_em_on_Team4
                 }
 
                 tiles[tilePos].SetSourceRect();
-                }
             }
+        }
 
         public static void DrawTiles() 
         {
@@ -80,7 +80,7 @@ namespace Prod_em_on_Team4
             {
                 case "Only-Y":
                     if (normalisedVelocity + tilePos.Item2 == -1)
-                {
+                    {
                         return false;
                     }
                     if (tilePos.Item2 == -1)
@@ -90,25 +90,25 @@ namespace Prod_em_on_Team4
                     break;
                 case "Only-X":
                     if (normalisedVelocity + tilePos.Item1 == -1)
-                        {
+                    {
                         return false;
-                        }
+                    }
                     if (tilePos.Item1 == -1)
                     {
                         return false;
                     }
                     break;
-                }
-            return true;
             }
+            return true;
+        }
         static void ParseTileProposition(ref List<Tile> tilesAround, ref Point proposedTilePos)
-            {  
+        {
             Tile checkTile = (tiles.ContainsKey(proposedTilePos)) ? tiles[proposedTilePos] : null;
             if (checkTile != null && checkTile._tileType != -3)
-                {
+            {
                 tilesAround.Add(checkTile);
-                            }
-                        }
+            }
+        }
         public static List<Tile> GetTilesAround(Point point, string inclusionParamater = "", int normalisedVelocity = 0)
         {
             List<Tile> tilesAround = new();
@@ -122,10 +122,10 @@ namespace Prod_em_on_Team4
                 proposedTile.Y = ((((point.Y + tileSize) / tileSize) + tilePos.Item2) * tileSize);
 
                 ParseTileProposition(ref tilesAround, ref proposedTile);
-                }
+            }
 
             return tilesAround;
-            }
+        }
         #endregion
 
         #region Set Data For Surrounding Tiles Functions
@@ -133,42 +133,42 @@ namespace Prod_em_on_Team4
         {
             switch (tilePosition[0])
             {
-                        case 't':
+                case 't':
                     checkTilePos.Y -= tileSize;
                     if (tiles.ContainsKey(checkTilePos))
-                            {
+                    {
                         if (tiles[checkTilePos]._tileType != 0) return true;
-                            }
-                            break;
-                        case 'b':
+                    }
+                    break;
+                case 'b':
                     checkTilePos.Y += tileSize;
                     if (tiles.ContainsKey(checkTilePos))
-                            {
+                    {
                         if (tiles[checkTilePos]._tileType != 0) return true;
-                            }
-                            break;
                     }
+                    break;
+            }
             return false;
         }
         static bool ThereAreTilesLeftOrRight(ref string tilePosition, Point checkTilePos)
-                    {
+        {
             switch (tilePosition[1])
             {
-                        case 'l':
+                case 'l':
                     checkTilePos.X += tileSize;
                     if (tiles.ContainsKey(checkTilePos))
-                            {
+                    {
                         if (tiles[checkTilePos]._tileType != 0) return true;
-                            }
-                            break;
-                        case 'r':
+                    }
+                    break;
+                case 'r':
                     checkTilePos.X -= tileSize;
                     if (tiles.ContainsKey(checkTilePos))
-                            {
+                    {
                         if (tiles[checkTilePos]._tileType != 0) return true;
-                            }
-                            break;
                     }
+                    break;
+            }
             return false;
         }
         static void HandleCornerTile(ref Point checkTilePos, ref Point tilePositionKey, ref string positionAroundTile)
@@ -180,22 +180,22 @@ namespace Prod_em_on_Team4
 
             if (cornerCanBeAllowed
                 && (tiles.ContainsKey(checkTilePos) && tiles[checkTilePos]._tileType != 0))
-                    {
+            {
                 tiles[tilePositionKey].tilesAround[positionAroundTile] = (byte)1;
-                    }
-                    else
-                    {
+            }
+            else
+            {
                 tiles[tilePositionKey].tilesAround[positionAroundTile] = 0;
             }
-                    }
+        }
         static void HandleNonCornerTile(ref Point checkTilePos, ref Point tilePositionKey, ref string positionAroundTile)
         {
             if (tiles.ContainsKey(checkTilePos) && tiles[checkTilePos]._tileType != 0)
             {
                 tiles[tilePositionKey].tilesAround[positionAroundTile] = (byte)1;
-                }
-                else
-                {
+            }
+            else
+            {
                 tiles[tilePositionKey].tilesAround[positionAroundTile] = (byte)0;
             }
         }
@@ -209,14 +209,14 @@ namespace Prod_em_on_Team4
                 string positionAroundTile = kvp.Key;
 
                 if (positionAroundTile.Length == 2)
-        {
+                {
                     HandleCornerTile(
                         ref checkTilePos, 
                         ref tilePositionKey, 
                         ref positionAroundTile);
                 }
                 else
-            {
+                {
                     HandleNonCornerTile(ref 
                         checkTilePos, 
                         ref tilePositionKey, 
@@ -228,9 +228,9 @@ namespace Prod_em_on_Team4
 
         #region Load Map From File Functions
         static void AssignTileByByte(int byteValueToInt, Point tilePos, ref int row, ref int column)
-                {
+        {
             switch (byteValueToInt)
-                    {
+            {
                 case 1:
                     tiles.Add(tilePos, new Tile(new Vector2(column * tileSize, row * tileSize), Color.White));
                     tiles[tilePos]._tileType = 0;
@@ -257,15 +257,15 @@ namespace Prod_em_on_Team4
                     column++;
                     break;
             }
-                    }
+        }
         static void GetTilesFromFile(BinaryReader binaryReader)
         {
             try
-                    {
+            {
                 int lineColumn = 0, lineNumber = 1;
                 Point tilePos;
                 while (true)
-                    {
+                {
                     tilePos = new(lineColumn * tileSize, lineNumber * tileSize);
                     AssignTileByByte((int)binaryReader.ReadByte(), tilePos, ref lineNumber, ref lineColumn);
                 }
@@ -275,9 +275,9 @@ namespace Prod_em_on_Team4
         public static void GetTileMap()
         {
             using (FileStream stream = File.Open($"{levelName}.tilemap", FileMode.Open))
-        {
-                using (BinaryReader br = new(stream))
             {
+                using (BinaryReader br = new(stream))
+                {
                     GetTilesFromFile(br);
                     Tile.LoadTileTexture("UnVincedTilesV2");
                     ConfigureTileTypes();

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -11,6 +11,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="PlayerManager.cs" />
+  </ItemGroup>
   <ItemGroup>
     <None Remove="Content\UnVincedTiles.png" />
   </ItemGroup>

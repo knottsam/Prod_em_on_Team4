@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Xml.Linq;
 
 namespace Prod_em_on_Team4
 {
@@ -23,7 +20,6 @@ namespace Prod_em_on_Team4
             direction.Normalize();
             _spritePosition.Y -= 0.5f * _bulletTexture.Height;
             _spriteBox = new RectangleF(ref _spritePosition, ref _bulletTexture);
-
 
             foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint()))
             {

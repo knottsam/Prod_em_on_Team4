@@ -7,7 +7,7 @@ namespace Prod_em_on_Team4
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Player Spy;
+        Enemy enemyTest;
 
         public Game1()
         {
@@ -29,14 +29,16 @@ namespace Prod_em_on_Team4
             Globals.Content = Content;
             Globals.spriteBatch = _spriteBatch;
             Globals.graphicsDevice = GraphicsDevice;
-            
+
+            enemyTest = new(new Vector2(500, 600), Color.Wheat);
+
             TileMap.GetTileMap();
             PlayerManager.Spy = new Player(TileMap.playerSpawnPoint, Color.AliceBlue);
             Globals.DefTexture();
         }
 
         protected override void Update(GameTime gameTime)
-        {   
+        {
             Globals.Update(ref gameTime);
 
             PlayerManager.Update();
@@ -53,6 +55,8 @@ namespace Prod_em_on_Team4
             PlayerManager.DrawPlayer();
             TileMap.DrawTiles();
             PlayerManager.DrawPlayerState();
+
+            enemyTest.Draw();
 
             Globals.spriteBatch.End();
 
