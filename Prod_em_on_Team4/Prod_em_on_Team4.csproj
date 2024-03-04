@@ -12,9 +12,6 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="PlayerManager.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Content\UnVincedTiles.png" />
   </ItemGroup>
   <ItemGroup>

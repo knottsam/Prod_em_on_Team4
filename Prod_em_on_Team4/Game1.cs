@@ -43,6 +43,7 @@ namespace Prod_em_on_Team4
 
             PlayerManager.Update();
             Camera.Follow(PlayerManager.Spy);
+            enemyTest.Update();
 
             base.Update(gameTime);
         }

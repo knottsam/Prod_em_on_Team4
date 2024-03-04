@@ -279,7 +279,7 @@ namespace Prod_em_on_Team4
                 using (BinaryReader br = new(stream))
                 {
                     GetTilesFromFile(br);
-                    Tile.LoadTileTexture("UnVincedTilesV2");
+                    Tile.LoadTileTexture("SAND DONE-1.png");
                     ConfigureTileTypes();
                 }
             }
