@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
+using System.Collections.Generic;
 
 namespace Prod_em_on_Team4
 {
@@ -8,6 +10,8 @@ namespace Prod_em_on_Team4
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         Enemy enemyTest;
+        List<Enemy> enemylist = new();
+        Song music;
 
         public Game1()
         {
@@ -30,8 +34,16 @@ namespace Prod_em_on_Team4
             Globals.spriteBatch = _spriteBatch;
             Globals.graphicsDevice = GraphicsDevice;
 
-            enemyTest = new(new Vector2(500, 600), Color.Wheat);
+            music = Content.Load<Song>("new_beat_epic_version");
+            MediaPlayer.Play(music);
+            MediaPlayer.IsRepeating = true;
 
+            enemyTest = new(new Vector2(500, 600), Color.Wheat);
+            enemylist.Add(new(new Vector2(6363, 14590), Color.Wheat));
+            enemylist.Add(new(new Vector2(16111, 13310), Color.Wheat));
+            enemylist.Add(new(new Vector2(17360, 7358), Color.Wheat));
+            enemylist.Add(new(new Vector2(10795, 14334), Color.Wheat));
+            enemylist.Add(new(new Vector2(13249, 12606), Color.Wheat));
             TileMap.GetTileMap();
             PlayerManager.Spy = new Player(TileMap.playerSpawnPoint, Color.AliceBlue);
             Globals.DefTexture();
@@ -45,6 +57,14 @@ namespace Prod_em_on_Team4
             Camera.Follow(PlayerManager.Spy);
             enemyTest.Update();
 
+            foreach (Enemy enemy in enemylist) 
+            {
+                enemy.Update();
+            }
+
+            if (MediaPlayer.State == MediaState.Stopped) MediaPlayer.Play(music);
+            else if(MediaPlayer.State == MediaState.Paused) MediaPlayer.Resume();
+            
             base.Update(gameTime);
         }
 
@@ -56,6 +76,11 @@ namespace Prod_em_on_Team4
             PlayerManager.DrawPlayer();
             TileMap.DrawTiles();
             PlayerManager.DrawPlayerState();
+
+            foreach (Enemy enemy in enemylist)
+            {
+                enemy.Update();
+            }
 
             enemyTest.Draw();
 
