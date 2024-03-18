@@ -32,11 +32,10 @@ namespace Prod_em_on_Team4
 
         public void SetSourceRect()
         {
-
             if (_tileType == -3)
             {
-                _tileType = TileMap.tileTypes[tileTypeValue()];
-                srcRect = new Rectangle((_tileType % TileMap.tileSheetColumns) * TileMap.tileSize, (_tileType / TileMap.tileSheetColumns) * TileMap.tileSize, TileMap.tileSize, TileMap.tileSize);
+                int __tileType = TileMap.tileTypes[tileTypeValue()];
+                srcRect = new Rectangle((__tileType % TileMap.tileSheetColumns) * TileMap.tileSize, (__tileType / TileMap.tileSheetColumns) * TileMap.tileSize, TileMap.tileSize, TileMap.tileSize);
             }
             else
             {
@@ -64,18 +63,20 @@ namespace Prod_em_on_Team4
         }
 
         Rectangle srcRect;
-        public override void Draw()
+        public void Draw(Color tileColor = default(Color))
         {
-            if (_tileType == 0)
+            if (tileColor == default(Color))
             {
-                if (TileMap.devMode)
-                {
-                    Globals.spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, _spriteColour);
-                }
+                tileColor  = Color.White;
+            }
+
+            if (_tileType == 0 && TileMap.devMode)
+            {
+                    Globals.spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, tileColor);   
             }
             else
             {
-                Globals.spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, _spriteColour);
+                Globals.spriteBatch.Draw(_tileTexture, _spritePosition, srcRect, tileColor);
             }
         }
     }

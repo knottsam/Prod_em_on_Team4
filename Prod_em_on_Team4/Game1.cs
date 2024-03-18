@@ -9,7 +9,7 @@ namespace Prod_em_on_Team4
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        Enemy enemyTest;
+
         List<Enemy> enemylist = new();
         Song music;
 
@@ -20,6 +20,17 @@ namespace Prod_em_on_Team4
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = Globals.screenWidth;
             _graphics.PreferredBackBufferHeight = Globals.screenHeight;
+
+            music = Content.Load<Song>("new_beat_epic_version");
+            MediaPlayer.Play(music);
+            MediaPlayer.IsRepeating = true;
+
+            //enemyTest = new(new Vector2(500, 600), Color.Wheat);
+            enemylist.Add(new(new Vector2(6363, 14590), Color.Wheat));
+            enemylist.Add(new(new Vector2(16111, 13310), Color.Wheat));
+            enemylist.Add(new(new Vector2(17360, 7358), Color.Wheat));
+            enemylist.Add(new(new Vector2(10795, 14334), Color.Wheat));
+            enemylist.Add(new(new Vector2(13249, 12606), Color.Wheat));
         }
 
         protected override void Initialize()
@@ -38,7 +49,7 @@ namespace Prod_em_on_Team4
             MediaPlayer.Play(music);
             MediaPlayer.IsRepeating = true;
 
-            enemyTest = new(new Vector2(500, 600), Color.Wheat);
+            //enemyTest = new(new Vector2(500, 600), Color.Wheat);
             enemylist.Add(new(new Vector2(6363, 14590), Color.Wheat));
             enemylist.Add(new(new Vector2(16111, 13310), Color.Wheat));
             enemylist.Add(new(new Vector2(17360, 7358), Color.Wheat));
@@ -53,9 +64,21 @@ namespace Prod_em_on_Team4
         {
             Globals.Update(ref gameTime);
 
-            PlayerManager.Update();
-            Camera.Follow(PlayerManager.Spy);
-            enemyTest.Update();
+            if (PlayerManager.Spy.HP > 0)
+            {
+                PlayerManager.Update();
+                Camera.Follow(PlayerManager.Spy);
+
+                foreach (Enemy enemy in enemylist)
+                {
+                    enemy.Update();
+                }
+
+                if (MediaPlayer.State == MediaState.Stopped) MediaPlayer.Play(music);
+                else if (MediaPlayer.State == MediaState.Paused) MediaPlayer.Resume();
+
+                //enemyTest.Update();
+            }
 
             foreach (Enemy enemy in enemylist) 
             {
@@ -73,16 +96,30 @@ namespace Prod_em_on_Team4
             GraphicsDevice.Clear(Color.Beige);
             Globals.spriteBatch.Begin(transformMatrix:Camera.Transform, samplerState: SamplerState.PointClamp);
 
-            PlayerManager.DrawPlayer();
-            TileMap.DrawTiles();
-            PlayerManager.DrawPlayerState();
+            if (PlayerManager.Spy.HP > 0)
+            {
+                PlayerManager.DrawPlayer();
+                TileMap.DrawTiles();
+            }
+            else 
+            {
+                Globals.spriteBatch.DrawString(PlayerManager.stateFont,
+                "YOU DIED BRUH...",
+                PlayerManager.Spy.Position
+                - (PlayerManager.stateFont.MeasureString(PlayerManager.Spy.State) / 2)
+                + new Vector2(PlayerManager.Spy.SpriteBox.Width / 2, 0),
+                Color.Red, 0, Vector2.Zero, 5, SpriteEffects.None, 0);
+            }
+            //PlayerManager.DrawPlayerState();
+
+            
 
             foreach (Enemy enemy in enemylist)
             {
                 enemy.Update();
             }
 
-            enemyTest.Draw();
+            //enemyTest.Draw();
 
             Globals.spriteBatch.End();
 

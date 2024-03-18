@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<<<<<<< Updated upstream
   <SourceFile>C:/Users/arinz/source/repos/Prod_em_on_Team4a/Prod_em_on_Team4/Content/GameBullet.png</SourceFile>
   <SourceTime>2024-03-11T19:34:10.036688+00:00</SourceTime>
   <DestFile>C:/Users/arinz/source/repos/Prod_em_on_Team4a/Prod_em_on_Team4/Content/bin/Windows/GameBullet.xnb</DestFile>
   <DestTime>2024-03-12T09:31:35.5641543+00:00</DestTime>
+=======
+  <SourceFile>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/GameBullet.png</SourceFile>
+  <SourceTime>2024-01-19T06:10:01.451119+00:00</SourceTime>
+  <DestFile>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/bin/Windows/GameBullet.xnb</DestFile>
+  <DestTime>2024-03-12T11:24:39.0675433+00:00</DestTime>
+>>>>>>> Stashed changes
   <Importer>TextureImporter</Importer>
   <ImporterTime>2022-07-26T12:44:56+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

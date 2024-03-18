@@ -9,7 +9,7 @@ namespace Prod_em_on_Team4
     {
         public static Player Spy;
 
-        private static SpriteFont stateFont = Globals.Content.Load<SpriteFont>("StateFont");
+        public static SpriteFont stateFont = Globals.Content.Load<SpriteFont>("StateFont");
 
         private static Vector2 stateTextOffset = new Vector2(0, 8);
 

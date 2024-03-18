@@ -71,6 +71,8 @@ namespace Prod_em_on_Team4
         public static void DrawTiles() 
         {
             foreach (Tile t in tiles.Values) t.Draw();
+
+            foreach (Tile t in drawTiles) t.Draw(Color.Red);
         }
 
         #region Get The Tiles Around A Point Functions
@@ -109,7 +111,7 @@ namespace Prod_em_on_Team4
                 tilesAround.Add(checkTile);
             }
         }
-        public static List<Tile> GetTilesAround(Point point, string inclusionParamater = "", int normalisedVelocity = 0)
+        public static List<Tile> GetTilesAround(Point point, string inclusionParamater = "", int normalisedVelocity = 0, bool draw = false)
         {
             List<Tile> tilesAround = new();
             Point proposedTile = new();
@@ -124,8 +126,15 @@ namespace Prod_em_on_Team4
                 ParseTileProposition(ref tilesAround, ref proposedTile);
             }
 
+            if (draw)
+            {
+                drawTiles = tilesAround;
+            }
+
             return tilesAround;
         }
+        static List<Tile> drawTiles;
+
         #endregion
 
         #region Set Data For Surrounding Tiles Functions
