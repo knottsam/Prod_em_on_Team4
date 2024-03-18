@@ -25,7 +25,7 @@ namespace Prod_em_on_Team4
 
         public virtual void LoadContent(ref string fileName)
         {
-            _spriteTexture = Globals.Content.Load<Texture2D>(fileName);
+            _spriteTexture = Globals.Content.Load<Texture2D>("UnVinced Spy");
             _spriteBox = new RectangleF(ref _spritePosition, ref _spriteTexture);
         }
 

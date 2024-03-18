@@ -4,11 +4,15 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/FULLY VINCED UP SPY-Sheet.png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/GameBullet.png</File>
-    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/player2.0.png</File>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/HealthBar.png</File>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/new_beat_epic_version.mp3</File>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/opp.png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/SAND DONE-1.png.png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/Spy Base Run (f9).png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/Spy Base Walk (f8).png</File>
+    <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/Spy1 COMPLETE.png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/StateFont.spritefont</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/Tile.png</File>
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/UnVinced Spy.png</File>
@@ -16,6 +20,10 @@
     <File>C:/Users/XZena/Documents/Visual Studio 2022/Repo/Prod_em_on_Team4/Content/UnVincedTilesV2.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

@@ -16,35 +16,44 @@ namespace Prod_em_on_Team4
         bool canDash = false;
         public string State { get => playerStates.Max().ToString(); }
         HashSet<PlayerState> playerStates = new();
-        enum PlayerState : sbyte
+        public enum PlayerState : sbyte
         {
             Airborne = -1,
-            Jumping,        
+            Jumping,
             Falling,
             Standing,
-            Walking,        
-            Running,                      
-            Gliding,        
-            WallClimbing,    
+            Walking,
+            Running,
+            Gliding,
+            WallClimbing,
             Dashing
         }
-        Dictionary<PlayerState, bool> playerUseState = new() { {PlayerState.Dashing, false}, { PlayerState.Gliding, false} };
+        public Dictionary<PlayerState, bool> playerUseState = new() { { PlayerState.Dashing, false }, { PlayerState.Gliding, false } };
         List<Bullet> bullets = new List<Bullet>();
-        Vector2 facingDirection = new Vector2(1,0), dashVel = Vector2.Zero, Velocity = Vector2.Zero;
+        Vector2 dashVel = Vector2.Zero;
+        public Vector2 Velocity = Vector2.Zero, facingDirection = new Vector2(1, 0);
         const float jumpAmount = 1200f, wallFriction = 0.9f; //terminalVelocity = 320;
         const int maxJumps = 2, dashSpeed = 48;
 
+        private Texture2D HealthBar;
+
+        private readonly int maxHP = 10;
+        public int HP;
+
         AnimationManager myAnimations;
 
-        public Player(Vector2 spritePosition, Color spriteColour) : base(ref spritePosition, ref spriteColour) 
+        public Player(Vector2 spritePosition, Color spriteColour) : base(ref spritePosition, ref spriteColour)
         {
             _spriteBox = new RectangleF(ref _spritePosition);
 
-            myAnimations = new(new Dictionary<string, Animation>() 
+            HealthBar = Globals.Content.Load<Texture2D>("HealthBar");
+            HP = maxHP;
+
+            myAnimations = new(new Dictionary<string, Animation>()
             {
-                {"Standing", new Animation(Globals.LoadTexture("UnVinced Spy"), 1, 0)},
+                {"Standing", new Animation(Globals.LoadTexture("Spy1 COMPLETE"), 1, 0)},
                 {"Walking" , new Animation(Globals.LoadTexture("Spy Base Walk (f8)"), 8, 100)},
-                {"Running" , new Animation(Globals.LoadTexture("Spy Base Run (f9)"), 9, 75)},
+                {"Running" , new Animation(Globals.LoadTexture("FULLY VINCED UP SPY-Sheet"), 9, 75)},
             });
 
             SetAnimation("Standing");
@@ -61,8 +70,6 @@ namespace Prod_em_on_Team4
             ManageAnimation();
 
             foreach (Bullet bullet in bullets) { bullet.Update(); }
-
-            Debug.WriteLine(_spritePosition);
         }
 
         public override void Draw()
@@ -74,6 +81,9 @@ namespace Prod_em_on_Team4
             }
 
             myAnimations.Draw(ref _spritePosition, (facingDirection.X == 1) ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+
+            Globals.spriteBatch.Draw(HealthBar, Position - new Vector2(0, 16), Color.Red);
+            Globals.spriteBatch.Draw(HealthBar, Position - new Vector2(0, 16), new Rectangle(0, 0, HealthBar.Width * HP / maxHP, HealthBar.Height), Color.Green);
         }
 
         void AttackDash()
@@ -82,7 +92,7 @@ namespace Prod_em_on_Team4
             {
                 Vector2 dashDirection = InputManager.Direction.ToVector2();
 
-                if ( ((dashDirection.X != 0) ^ (dashDirection.Y != 0)) && dashDirection.Y >= 0)
+                if (((dashDirection.X != 0) ^ (dashDirection.Y != 0)) && dashDirection.Y >= 0)
                 {
                     dashDirection.Normalize();
                 }
@@ -94,12 +104,12 @@ namespace Prod_em_on_Team4
                 playerUseState[PlayerState.Dashing] = true;
 
                 jumpsAvailable = 0;
-                Velocity = dashVel = dashDirection * dashSpeed; 
+                Velocity = dashVel = dashDirection * dashSpeed;
                 canDash = false;
             }
         }
 
-        void ShootBullet() 
+        void ShootBullet()
         {
             if (shootDelay >= 0.1)
             {
@@ -108,7 +118,7 @@ namespace Prod_em_on_Team4
                     bullets.Add(
                     new Bullet
                     (
-                        new Vector2(_spritePosition.X + _spriteBox.Width, _spritePosition.Y + (int)(0.5 * _spriteBox.Height)), 
+                        new Vector2(_spritePosition.X + _spriteBox.Width, _spritePosition.Y + (int)(0.5 * _spriteBox.Height)),
                         Color.Red,
                         ref facingDirection
                     )
@@ -116,7 +126,7 @@ namespace Prod_em_on_Team4
                     shootDelay = 0;
                 }
             }
-            else 
+            else
             {
                 shootDelay += (1 / Globals.TotalMilliseconds);
             }
@@ -195,7 +205,6 @@ namespace Prod_em_on_Team4
                     }
 
                     facingDirection.X = Math.Sign(horizontalMovement);
-                    //facingDirection.Normalize();
                     _spriteBox.X += horizontalMovement;
                 }
                 else { _spriteBox.X += Velocity.X; }
@@ -217,7 +226,6 @@ namespace Prod_em_on_Team4
                         }
                         Velocity.X = dashVel.X = 0;
                         break;
-
                     }
                 }
             }
@@ -306,7 +314,7 @@ namespace Prod_em_on_Team4
                     {
                         SetAnimation("Walking");
                     }
-                break;
+                    break;
 
                 case "Running":
                     if (myAnimations.currentAnimation != "Running")

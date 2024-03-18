@@ -9,9 +9,10 @@ namespace Prod_em_on_Team4
     {
         public static Player Spy;
 
-        private static SpriteFont stateFont = Globals.Content.Load<SpriteFont>("StateFont");
+        public static SpriteFont stateFont = Globals.Content.Load<SpriteFont>("StateFont");
 
-        private static Vector2 stateTextOffset = new Vector2(0, 8);
+
+        private static Vector2 stateTextOffset = new Vector2(40, 8);
 
         public static void Update()
         {
@@ -28,10 +29,10 @@ namespace Prod_em_on_Team4
         public static void DrawPlayerState()
         {
             Globals.spriteBatch.DrawString(stateFont,
-                Spy.State,
+                "Kill All The Enemies",
                 Spy.Position - stateTextOffset
                 - (stateFont.MeasureString(Spy.State) / 2)
-                + new Vector2(Spy.SpriteBox.Width / 2, 0),
+                + new Vector2(Spy.SpriteBox.Width / 2, -17),
                 Color.Red);
         }
 

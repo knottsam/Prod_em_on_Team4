@@ -10,7 +10,7 @@ namespace Prod_em_on_Team4
 {
     internal static class TileMap
     {
-        static readonly List <Tuple<int, int>> tileAroundPositions = new() 
+        static readonly List<Tuple<int, int>> tileAroundPositions = new()
         {
             Tuple.Create(-2, -2),
             Tuple.Create(-1, -2),
@@ -22,7 +22,7 @@ namespace Prod_em_on_Team4
             Tuple.Create(0, 0),
         };
         static readonly string levelName = "Testing";
-        static readonly Dictionary<Point, Tile> tiles = new ();
+        static readonly Dictionary<Point, Tile> tiles = new();
         static readonly Dictionary<string, Vector2> tilesAroundTile = new()
         {
             { "t", new Vector2(0, 1) },
@@ -68,9 +68,11 @@ namespace Prod_em_on_Team4
             }
         }
 
-        public static void DrawTiles() 
+        public static void DrawTiles()
         {
             foreach (Tile t in tiles.Values) t.Draw();
+
+            foreach (Tile t in drawTiles) t.Draw(Color.Red);
         }
 
         #region Get The Tiles Around A Point Functions
@@ -109,7 +111,7 @@ namespace Prod_em_on_Team4
                 tilesAround.Add(checkTile);
             }
         }
-        public static List<Tile> GetTilesAround(Point point, string inclusionParamater = "", int normalisedVelocity = 0)
+        public static List<Tile> GetTilesAround(Point point, string inclusionParamater = "", int normalisedVelocity = 0, bool draw = false)
         {
             List<Tile> tilesAround = new();
             Point proposedTile = new();
@@ -124,8 +126,15 @@ namespace Prod_em_on_Team4
                 ParseTileProposition(ref tilesAround, ref proposedTile);
             }
 
+            if (draw)
+            {
+                drawTiles = tilesAround;
+            }
+
             return tilesAround;
         }
+        static List<Tile> drawTiles;
+
         #endregion
 
         #region Set Data For Surrounding Tiles Functions
@@ -205,21 +214,21 @@ namespace Prod_em_on_Team4
             {
                 int checkTileX = (int)(tiles[tilePositionKey].Position.X + (kvp.Value.X * tileSize));
                 int checkTileY = (int)(tiles[tilePositionKey].Position.Y + (kvp.Value.Y * tileSize));
-                Point checkTilePos =  new(checkTileX, checkTileY);
+                Point checkTilePos = new(checkTileX, checkTileY);
                 string positionAroundTile = kvp.Key;
 
                 if (positionAroundTile.Length == 2)
                 {
                     HandleCornerTile(
-                        ref checkTilePos, 
-                        ref tilePositionKey, 
+                        ref checkTilePos,
+                        ref tilePositionKey,
                         ref positionAroundTile);
                 }
                 else
                 {
-                    HandleNonCornerTile(ref 
-                        checkTilePos, 
-                        ref tilePositionKey, 
+                    HandleNonCornerTile(ref
+                        checkTilePos,
+                        ref tilePositionKey,
                         ref positionAroundTile);
                 }
             }

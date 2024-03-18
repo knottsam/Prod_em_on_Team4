@@ -53,6 +53,19 @@ namespace Prod_em_on_Team4
                 }
             }
 
+            foreach (Enemy enemy in Game1.enemylist)
+            {
+                if (_spriteBox.Intersects(enemy.SpriteBox))
+                {
+                    _spriteBox.X = (xMove > 0) ? enemy.SpriteBox.Left - _spriteBox.Width : _spriteBox.X = enemy.SpriteBox.Right;
+                    _IHitSomething = true;
+
+                    enemy.HP--;
+                    enemy.Colour = Color.IndianRed;
+                    break;
+                }
+            }
+
             _spriteBox.Y += yMove;
             dist.Y += yMove;
             foreach (Tile t in TileMap.GetTilesAround(_spritePosition.ToPoint()))
